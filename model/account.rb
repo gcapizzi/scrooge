@@ -6,7 +6,11 @@ module Scrooge
     include DataMapper::Resource
 
     property :id,   Serial
-    property :name, String, default: ''
+    property :name, String, required: true
+
+    def initialize(name)
+      self.name = name
+    end
   end
 
 end

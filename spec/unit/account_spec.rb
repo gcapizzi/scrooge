@@ -4,10 +4,9 @@ require_relative '../../model/account'
 module Scrooge
 
   describe Account do
-    it 'is empty by default' do
-      account = Account.new
-      expect(account.id).to be_nil
-      expect(account.name).to be_empty
+    it "doesn't allow an empty name" do
+      account = Account.new('')
+      expect(account).not_to be_valid
     end
   end
 
