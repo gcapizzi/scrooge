@@ -20,25 +20,23 @@ module Scrooge
     end
 
     it 'has many transactions' do
-      account = Account.new('an account')
-      expect(account).to respond_to(:transactions)
+      expect(Account.new('')).to respond_to(:transactions)
     end
   end
 
   describe Transaction do
     describe '#initialize' do
       it 'accepts a transaction description and amount' do
-        transaction_description = 'a transaction description'
-        transaction_amount = 12.34
-        transaction = Transaction.new(transaction_description, transaction_amount)
-        expect(transaction.description).to eq(transaction_description)
-        expect(transaction.amount).to eq(transaction_amount)
+        description = 'a transaction description'
+        amount = 12.34
+        transaction = Transaction.new(description, amount)
+        expect(transaction.description).to eq(description)
+        expect(transaction.amount).to eq(amount)
       end
     end
 
     it 'belongs to an account' do
-      transaction = Transaction.new('a transaction', 0)
-      expect(transaction).to respond_to(:account)
+      expect(Transaction.new('', 0)).to respond_to(:account)
     end
   end
 
