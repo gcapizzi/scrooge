@@ -1,7 +1,8 @@
 require 'spec_helper'
 require_relative '../../lib/model'
 
-DataMapper.setup(:default, 'sqlite::memory')
+DataMapper.setup(:default, 'sqlite3::memory:')
+DataMapper.auto_migrate!
 
 module Scrooge
 
@@ -13,6 +14,15 @@ module Scrooge
 
     it 'has many transactions' do
       expect(Account.new('')).to respond_to(:transactions)
+    end
+
+    it 'is wired correctly' do
+      account = Account.new('test account')
+      3.times { |i| account.transactions << Transaction.new("test transaction #{i}", i) }
+      account.save
+
+      expect(Account.get(account.id)).to eq(account)
+      expect(account.transactions.count).to eq(3)
     end
   end
 
