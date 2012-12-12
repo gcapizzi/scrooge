@@ -12,23 +12,27 @@ module Scrooge
       expect(account).not_to be_valid
     end
 
-    it 'has many transactions' do
-      expect(Account.new('')).to respond_to(:transactions)
-    end
-
     it 'is wired correctly' do
       account = Account.new('test account')
       3.times { |i| account.transactions << Transaction.new("test transaction #{i}", i) }
       account.save
 
-      expect(Account.get(account.id)).to eq(account)
-      expect(account.transactions.count).to eq(3)
+      account_on_db = Account.get(account.id)
+      expect(account_on_db).to eq(account)
+      expect(account_on_db.transactions.count).to eq(3)
     end
   end
 
   describe Transaction do
-    it 'belongs to an account' do
-      expect(Transaction.new('', 0)).to respond_to(:account)
+    it 'is wired correctly' do
+      transaction = Transaction.new('test transaction', 12.34)
+      account = Account.new('test account')
+      transaction.account = account
+      transaction.save
+
+      transaction_on_db = Transaction.get(transaction.id)
+      expect(transaction_on_db).to eq(transaction)
+      expect(transaction_on_db.account).to eq(account)
     end
   end
 
