@@ -13,4 +13,7 @@ module Scrooge
     json Account.all
   end
 
+  get '/accounts/:id' do |id|
+    json Account.get(id)
+  end
 end

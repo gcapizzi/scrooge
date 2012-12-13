@@ -15,11 +15,23 @@ describe Scrooge do
     accounts.each { |account| Scrooge::Account.create(account) }
   end
 
+  after do
+    Scrooge::Account.destroy
+  end
+
   describe 'GET /accounts' do
     it 'returns all accounts' do
       get '/accounts'
       expect(last_response).to be_ok
       expect(parse_json(last_response)).to eq(accounts)
+    end
+  end
+
+  describe 'GET /accounts/:id' do
+    it 'returns the specified account' do
+      get '/accounts/1'
+      expect(last_response).to be_ok
+      expect(parse_json(last_response)).to eq(accounts.first)
     end
   end
 
