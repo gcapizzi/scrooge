@@ -9,10 +9,6 @@ module Scrooge
     property :name, String, required: true
 
     has n, :transactions
-
-    def initialize(name)
-      self.name = name
-    end
   end
 
   class Transaction
@@ -23,10 +19,5 @@ module Scrooge
     property :amount,      Decimal, scale: 2
 
     belongs_to :account
-
-    def initialize(description, amount)
-      self.description = description
-      self.amount = amount
-    end
   end
 end
