@@ -41,6 +41,7 @@ describe Scrooge do
         get '/accounts/123'
         expect(last_response).not_to be_ok
         expect(last_response.status).to eq(404)
+        expect(last_response.body).to be_empty
       end
     end
   end
