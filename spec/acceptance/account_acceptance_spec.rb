@@ -28,10 +28,20 @@ describe Scrooge do
   end
 
   describe 'GET /accounts/:id' do
-    it 'returns the specified account' do
-      get '/accounts/1'
-      expect(last_response).to be_ok
-      expect(parse_json(last_response)).to eq(accounts.first)
+    context 'when the account exists' do
+      it 'returns the specified account' do
+        get '/accounts/1'
+        expect(last_response).to be_ok
+        expect(parse_json(last_response)).to eq(accounts.first)
+      end
+    end
+
+    context 'when the account doesn\'t exist' do
+      it 'returns 404' do
+        get '/accounts/123'
+        expect(last_response).not_to be_ok
+        expect(last_response.status).to eq(404)
+      end
     end
   end
 
