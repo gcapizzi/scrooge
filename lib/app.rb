@@ -15,10 +15,7 @@ module Scrooge
 
   get '/accounts/:id' do |id|
     account = Account.get(id)
-    if account.nil?
-      status 404
-    else
-      json account
-    end
+    return status 404 if account.nil?
+    json account
   end
 end
