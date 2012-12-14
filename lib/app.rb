@@ -3,6 +3,7 @@ require 'sinatra/json'
 require 'dm-serializer'
 require_relative 'model'
 
+# DataMapper::Logger.new(STDOUT, :debug)
 DataMapper.setup(:default, 'sqlite:///Users/giuseppe/Downloads/scrooge.db')
 
 module Scrooge
@@ -18,4 +19,15 @@ module Scrooge
     return status 404 if account.nil?
     json account
   end
+
+  put '/accounts/:id' do |id|
+    account = Account.first_or_create(id: id)
+    account.name = params[:name]
+
+    return status 400 unless account.valid?
+
+    account.save
+    json account
+  end
+
 end

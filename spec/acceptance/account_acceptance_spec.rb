@@ -46,6 +46,52 @@ describe Scrooge do
     end
   end
 
+  describe 'PUT /accounts/:id' do
+    context 'when the account exists' do
+      context 'when params are valid' do
+        it 'updates the account' do
+          new_name = 'new test account name'
+
+          put '/accounts/1', name: new_name
+          expect(last_response).to be_ok
+
+          get '/accounts/1'
+          account = parse_json(last_response)
+          expect(account[:name]).to eq(new_name)
+        end
+
+        context 'when params are invalid' do
+          it 'returns a 400 Bad Request and doesn\'t update the account' do
+            put '/accounts/1', name: ''
+            expect(last_response.status).to eq(400)
+            expect(last_response.body).to be_empty
+
+            get '/accounts/1'
+            account = parse_json(last_response)
+            expect(account[:name]).not_to be_empty
+          end
+        end
+      end
+    end
+
+    context 'when the account doesn\'t exist' do
+      it 'creates a new account' do
+        new_name = 'new test account name'
+
+        put '/accounts/123', name: new_name
+        response = parse_json(last_response)
+        expect(last_response).to be_ok
+        expect(response[:id]).to eq(123)
+        expect(response[:name]).to eq(new_name)
+
+        get '/accounts/123'
+        response = parse_json(last_response)
+        expect(last_response).to be_ok
+        expect(response[:name]).to eq(new_name)
+      end
+    end
+  end
+
   def parse_json(json_response)
     JSON.parse(json_response.body, symbolize_names: true)
   end
