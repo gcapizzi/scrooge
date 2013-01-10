@@ -116,8 +116,18 @@ describe Scrooge do
         expect(account[:name]).to eq('new account name')
 
         get '/accounts'
-        expect(last_response).to be_ok
         expect(parse_json(last_response).count).to eq(4)
+      end
+    end
+
+    context 'when params are invalid' do
+      it 'returns a 400 Bad Request and doesn\'t create an account' do
+        post '/accounts', name: ''
+        expect(last_response.status).to eq(400)
+        expect(last_response.body).to be_empty
+
+        get '/accounts'
+        expect(parse_json(last_response).count).to eq(3)
       end
     end
   end
