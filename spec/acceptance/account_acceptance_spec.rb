@@ -50,7 +50,7 @@ describe Scrooge do
     context 'when the account exists' do
       context 'when params are valid' do
         it 'updates the account' do
-          new_name = 'new test account name'
+          new_name = 'new account name'
 
           put '/accounts/1', name: new_name
           expect(last_response).to be_ok
@@ -77,7 +77,7 @@ describe Scrooge do
     context 'when the account doesn\'t exist' do
       context 'when the params are valid' do
         it 'creates a new account' do
-          new_name = 'new test account name'
+          new_name = 'new account name'
 
           put '/accounts/123', name: new_name
           response = parse_json(last_response)
