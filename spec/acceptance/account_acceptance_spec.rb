@@ -59,17 +59,17 @@ describe Scrooge do
           account = parse_json(last_response)
           expect(account[:name]).to eq(new_name)
         end
+      end
 
-        context 'when params are invalid' do
-          it 'returns a 400 Bad Request and doesn\'t update the account' do
-            put '/accounts/1', name: ''
-            expect(last_response.status).to eq(400)
-            expect(last_response.body).to be_empty
+      context 'when params are invalid' do
+        it 'returns a 400 Bad Request and doesn\'t update the account' do
+          put '/accounts/1', name: ''
+          expect(last_response.status).to eq(400)
+          expect(last_response.body).to be_empty
 
-            get '/accounts/1'
-            account = parse_json(last_response)
-            expect(account[:name]).not_to be_empty
-          end
+          get '/accounts/1'
+          account = parse_json(last_response)
+          expect(account[:name]).not_to be_empty
         end
       end
     end
@@ -93,7 +93,7 @@ describe Scrooge do
       end
 
       context 'when params are invalid' do
-        it 'returns a 400 Bad Request and doesn\'t create the account' do
+        it 'returns a 400 Bad Request and doesn\'t create an account' do
           put '/accounts/123', name: ''
           expect(last_response.status).to eq(400)
           expect(last_response.body).to be_empty
