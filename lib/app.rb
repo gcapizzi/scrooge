@@ -36,4 +36,15 @@ module Scrooge
     json account
   end
 
+  delete '/accounts/:id' do |id|
+    account = Account.get(id)
+    return status 404 if account.nil?
+
+    if account.destroy
+      json account
+    else
+      status 500
+    end
+  end
+
 end

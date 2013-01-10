@@ -132,6 +132,33 @@ describe Scrooge do
     end
   end
 
+  describe 'DELETE /accounts/:id' do
+    context 'when the account exists' do
+      it 'deletes the account' do
+        delete '/accounts/1'
+        expect(last_response).to be_ok
+
+        account = parse_json(last_response)
+        expect(account[:id]).to eq(1)
+        expect(account[:name]).to eq("test account 1")
+
+        get '/accounts/1'
+        expect(last_response.status).to eq(404)
+
+        get '/accounts'
+        expect(parse_json(last_response).count).to eq(2)
+      end
+    end
+
+    context 'when the account doesn\'t exist' do
+      it 'returns 404' do
+        delete '/accounts/123'
+        expect(last_response).not_to be_ok
+        expect(last_response.status).to eq(404)
+      end
+    end
+  end
+
   def parse_json(json_response)
     JSON.parse(json_response.body, symbolize_names: true)
   end
