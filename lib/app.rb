@@ -30,4 +30,10 @@ module Scrooge
     json account
   end
 
+  post '/accounts' do
+    account = Account.create(params)
+    return status 400 unless account.saved?
+    json account
+  end
+
 end

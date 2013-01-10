@@ -107,6 +107,21 @@ describe Scrooge do
     end
   end
 
+  describe 'POST /accounts' do
+    context 'when params are valid' do
+      it 'creates a new account' do
+        post '/accounts', name: 'new account name'
+        expect(last_response.status).to eq(200)
+        account = parse_json(last_response)
+        expect(account[:name]).to eq('new account name')
+
+        get '/accounts'
+        expect(last_response).to be_ok
+        expect(parse_json(last_response).count).to eq(4)
+      end
+    end
+  end
+
   def parse_json(json_response)
     JSON.parse(json_response.body, symbolize_names: true)
   end
