@@ -1,7 +1,7 @@
 require 'sinatra'
 require 'sinatra/json'
 require 'dm-serializer'
-require_relative 'model'
+require_relative 'lib/model'
 
 # DataMapper::Logger.new(STDOUT, :debug)
 DataMapper.setup(:default, 'sqlite:///Users/giuseppe/Downloads/scrooge.db')
