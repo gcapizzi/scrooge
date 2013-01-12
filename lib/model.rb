@@ -20,4 +20,6 @@ module Scrooge
 
     belongs_to :account
   end
+
+  DataMapper.finalize
 end
