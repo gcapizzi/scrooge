@@ -9,11 +9,17 @@ describe Scrooge do
   include Rack::Test::Methods
 
   let(:app) { Sinatra::Application }
-  let(:accounts) { (1..3).map { |i| { id: i, name: "test account #{i}" }}}
+  let(:accounts) {{
+      accounts: (1..3).map do |i|
+        { account: { id: i, name: "test account #{i}" } }
+      end
+  }}
 
   before do
     DataMapper.auto_migrate!
-    accounts.each { |account| Scrooge::Account.create(account) }
+    accounts[:accounts].each do |account|
+      Scrooge::Account.create(account[:account])
+    end
   end
 
   describe 'GET /accounts' do
@@ -29,7 +35,7 @@ describe Scrooge do
       it 'returns the specified account' do
         get '/accounts/1'
         expect(last_response).to be_ok
-        expect(parse_json(last_response)).to eq(accounts.first)
+        expect(parse_json(last_response)).to eq(accounts[:accounts].first)
       end
     end
 
@@ -53,7 +59,7 @@ describe Scrooge do
           expect(last_response).to be_ok
 
           get '/accounts/1'
-          account = parse_json(last_response)
+          account = parse_json(last_response)[:account]
           expect(account[:name]).to eq(new_name)
         end
       end
@@ -65,7 +71,7 @@ describe Scrooge do
           expect(last_response.body).to be_empty
 
           get '/accounts/1'
-          account = parse_json(last_response)
+          account = parse_json(last_response)[:account]
           expect(account[:name]).not_to be_empty
         end
       end
@@ -77,15 +83,15 @@ describe Scrooge do
           new_name = 'new account name'
 
           put '/accounts/123', name: new_name
-          response = parse_json(last_response)
           expect(last_response).to be_ok
-          expect(response[:id]).to eq(123)
-          expect(response[:name]).to eq(new_name)
+          account = parse_json(last_response)[:account]
+          expect(account[:id]).to eq(123)
+          expect(account[:name]).to eq(new_name)
 
           get '/accounts/123'
-          response = parse_json(last_response)
           expect(last_response).to be_ok
-          expect(response[:name]).to eq(new_name)
+          account = parse_json(last_response)[:account]
+          expect(account[:name]).to eq(new_name)
         end
       end
 
@@ -109,11 +115,11 @@ describe Scrooge do
       it 'creates a new account' do
         post '/accounts', name: 'new account name'
         expect(last_response).to be_ok
-        account = parse_json(last_response)
+        account = parse_json(last_response)[:account]
         expect(account[:name]).to eq('new account name')
 
         get '/accounts'
-        expect(parse_json(last_response).count).to eq(4)
+        expect(parse_json(last_response)[:accounts].count).to eq(4)
       end
     end
 
@@ -124,7 +130,7 @@ describe Scrooge do
         expect(last_response.body).to be_empty
 
         get '/accounts'
-        expect(parse_json(last_response).count).to eq(3)
+        expect(parse_json(last_response)[:accounts].count).to eq(3)
       end
     end
   end
@@ -135,7 +141,7 @@ describe Scrooge do
         delete '/accounts/1'
         expect(last_response).to be_ok
 
-        account = parse_json(last_response)
+        account = parse_json(last_response)[:account]
         expect(account[:id]).to eq(1)
         expect(account[:name]).to eq("test account 1")
 
@@ -143,7 +149,7 @@ describe Scrooge do
         expect(last_response.status).to eq(404)
 
         get '/accounts'
-        expect(parse_json(last_response).count).to eq(2)
+        expect(parse_json(last_response)[:accounts].count).to eq(2)
       end
     end
 

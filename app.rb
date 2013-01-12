@@ -1,6 +1,6 @@
 require 'sinatra'
-require 'sinatra/json'
 require 'dm-serializer'
+require 'rabl'
 require_relative 'lib/model'
 
 DataMapper.setup(:default, "sqlite://#{Dir.pwd}/db/scrooge.db")
@@ -11,40 +11,48 @@ module Scrooge
     DataMapper.auto_upgrade!
   end
 
-  set :json_encoder, :to_json
+  helpers do
+    def rabl(template, options = {}, locals = {})
+      Rabl.register!
+      content_type 'application/json'
+      options = { format: 'json' }.merge options
+      render :rabl, template, options, locals
+    end
+  end
 
   get '/accounts' do
-    json Account.all
+    @accounts = Account.all
+    rabl :accounts
   end
 
   get '/accounts/:id' do |id|
-    account = Account.get(id)
-    return status 404 if account.nil?
-    json account
+    @account = Account.get(id)
+    return status 404 if @account.nil?
+    rabl :account
   end
 
   put '/accounts/:id' do |id|
-    account = Account.first_or_create(id: id)
-    account.name = params[:name]
+    @account = Account.first_or_create(id: id)
+    @account.name = params[:name]
 
-    return status 400 unless account.valid?
+    return status 400 unless @account.valid?
 
-    account.save
-    json account
+    @account.save
+    rabl :account
   end
 
   post '/accounts' do
-    account = Account.create(params)
-    return status 400 unless account.saved?
-    json account
+    @account = Account.create(params)
+    return status 400 unless @account.saved?
+    rabl :account
   end
 
   delete '/accounts/:id' do |id|
-    account = Account.get(id)
-    return status 404 if account.nil?
+    @account = Account.get(id)
+    return status 404 if @account.nil?
 
-    if account.destroy
-      json account
+    if @account.destroy
+      rabl :account
     else
       status 500
     end
