@@ -12,11 +12,8 @@ describe Scrooge do
   let(:accounts) { (1..3).map { |i| { id: i, name: "test account #{i}" }}}
 
   before do
+    DataMapper.auto_migrate!
     accounts.each { |account| Scrooge::Account.create(account) }
-  end
-
-  after do
-    Scrooge::Account.destroy
   end
 
   describe 'GET /accounts' do
