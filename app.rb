@@ -7,6 +7,10 @@ DataMapper.setup(:default, "sqlite://#{Dir.pwd}/db/scrooge.db")
 
 module Scrooge
 
+  configure :development do
+    DataMapper.auto_upgrade!
+  end
+
   set :json_encoder, :to_json
 
   get '/accounts' do
