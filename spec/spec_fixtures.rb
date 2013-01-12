@@ -1,4 +1,5 @@
 require 'dm-sweatshop'
+require_relative '../lib/model'
 
 module Scrooge
 
