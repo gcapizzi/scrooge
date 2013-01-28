@@ -3,12 +3,14 @@ require 'dm-serializer'
 require 'rabl'
 require_relative 'lib/model'
 
-DataMapper.setup(:default, "sqlite://#{Dir.pwd}/db/scrooge.db")
-
 module Scrooge
 
   configure :development do
-    DataMapper.auto_upgrade!
+    DataMapper.setup(:default, "sqlite://#{Dir.pwd}/db/scrooge.db")
+  end
+
+  configure :test do
+    DataMapper.setup(:default, 'sqlite::memory:')
   end
 
   helpers do
