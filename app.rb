@@ -1,3 +1,6 @@
+require 'rubygems'
+require 'bundler/setup'
+
 require 'sinatra'
 require 'dm-serializer'
 require 'rabl'

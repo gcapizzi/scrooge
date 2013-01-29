@@ -1,3 +1,5 @@
+require 'dm-sweatshop'
+
 require './model'
 
 module Scrooge
