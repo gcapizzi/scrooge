@@ -1,7 +1,8 @@
 require 'sinatra'
 require 'dm-serializer'
 require 'rabl'
-require_relative 'lib/model'
+
+require './model'
 
 module Scrooge
 

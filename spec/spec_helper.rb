@@ -1,6 +1,10 @@
+# Require all test gems
+
+require 'bundler'
+Bundler.require(:test)
+
 # Setup SimpleCov
 
-require 'simplecov'
 SimpleCov.start
 
 # Helper functions

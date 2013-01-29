@@ -116,7 +116,9 @@ DEPENDENCIES
   data_mapper
   dm-sqlite-adapter
   dm-sweatshop
+  json
   rabl
+  rack
   rspec
   simplecov
   sinatra

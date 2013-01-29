@@ -1,9 +1,7 @@
 require 'spec_helper'
-require 'rack/test'
-require 'data_mapper'
-require 'json'
-require_relative '../../lib/model'
-require_relative '../../app'
+
+require './model'
+require './app'
 
 describe Scrooge do
   include Rack::Test::Methods
