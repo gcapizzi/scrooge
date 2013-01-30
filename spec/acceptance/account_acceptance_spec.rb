@@ -8,7 +8,7 @@ require './app'
 describe Scrooge do
   include Rack::Test::Methods
 
-  let(:app) { Sinatra::Application }
+  let(:app) { Scrooge::App }
   let(:accounts) {{
       accounts: (1..3).map do |i|
         { account: { id: i, name: "test account #{i}" } }
