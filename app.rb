@@ -44,7 +44,7 @@ module Scrooge
       @account = Account.first_or_create(id: id)
       @account.name = params[:name]
 
-      return status 400 unless @account.valid?
+      return status 400 if not @account.valid?
 
       @account.save
       rabl :account
@@ -52,7 +52,7 @@ module Scrooge
 
     post '/accounts' do
       @account = Account.create(params)
-      return status 400 unless @account.saved?
+      return status 400 if not @account.saved?
       rabl :account
     end
 
