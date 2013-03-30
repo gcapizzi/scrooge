@@ -4,6 +4,7 @@ gem 'data_mapper'
 gem 'sinatra'
 gem 'sinatra-contrib'
 gem 'rabl'
+gem 'oj'
 
 group :test do
   gem 'rspec'
