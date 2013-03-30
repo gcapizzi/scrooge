@@ -34,13 +34,13 @@ module Scrooge
     end
 
     get '/accounts/:id' do |id|
-      @account = Account.get(id)
+      @account = Account.get(id.to_i)
       return status 404 if @account.nil?
       rabl :account
     end
 
     put '/accounts/:id' do |id|
-      @account = Account.first_or_create(id: id)
+      @account = Account.first_or_create(id: id.to_i)
       @account.name = params[:name]
 
       return status 400 if not @account.valid?
@@ -56,7 +56,7 @@ module Scrooge
     end
 
     delete '/accounts/:id' do |id|
-      @account = Account.get(id)
+      @account = Account.get(id.to_i)
       return status 404 if @account.nil?
 
       if @account.destroy
