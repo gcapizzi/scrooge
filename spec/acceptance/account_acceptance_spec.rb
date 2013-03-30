@@ -25,7 +25,7 @@ describe Scrooge do
   describe 'GET /accounts' do
     it 'returns all accounts' do
       get '/accounts'
-      expect(last_response).to be_ok
+      expect(last_response.status).to eq(200)
       expect(parse_json(last_response)).to eq(accounts)
     end
   end
@@ -34,7 +34,7 @@ describe Scrooge do
     context 'when the account exists' do
       it 'returns the specified account' do
         get '/accounts/1'
-        expect(last_response).to be_ok
+        expect(last_response.status).to eq(200)
         expect(parse_json(last_response)).to eq(accounts[:accounts].first)
       end
     end
@@ -42,7 +42,6 @@ describe Scrooge do
     context 'when the account doesn\'t exist' do
       it 'returns 404' do
         get '/accounts/123'
-        expect(last_response).not_to be_ok
         expect(last_response.status).to eq(404)
         expect(last_response.body).to be_empty
       end
@@ -56,9 +55,10 @@ describe Scrooge do
           new_name = 'new account name'
 
           put '/accounts/1', name: new_name
-          expect(last_response).to be_ok
+          expect(last_response.status).to eq(200)
 
           get '/accounts/1'
+          expect(last_response.status).to eq(200)
           account = parse_json(last_response)[:account]
           expect(account[:name]).to eq(new_name)
         end
@@ -71,6 +71,7 @@ describe Scrooge do
           expect(last_response.body).to be_empty
 
           get '/accounts/1'
+          expect(last_response.status).to eq(200)
           account = parse_json(last_response)[:account]
           expect(account[:name]).not_to be_empty
         end
@@ -83,13 +84,13 @@ describe Scrooge do
           new_name = 'new account name'
 
           put '/accounts/123', name: new_name
-          expect(last_response).to be_ok
+          expect(last_response.status).to eq(200)
           account = parse_json(last_response)[:account]
           expect(account[:id]).to eq(123)
           expect(account[:name]).to eq(new_name)
 
           get '/accounts/123'
-          expect(last_response).to be_ok
+          expect(last_response.status).to eq(200)
           account = parse_json(last_response)[:account]
           expect(account[:name]).to eq(new_name)
         end
@@ -102,7 +103,7 @@ describe Scrooge do
           expect(last_response.body).to be_empty
 
           get '/accounts/123'
-          expect(last_response).not_to be_ok
+          expect(last_response.status).not_to eq(200)
           expect(last_response.status).to eq(404)
           expect(last_response.body).to be_empty
         end
@@ -114,12 +115,14 @@ describe Scrooge do
     context 'when params are valid' do
       it 'creates a new account' do
         post '/accounts', name: 'new account name'
-        expect(last_response).to be_ok
+        expect(last_response.status).to eq(200)
         account = parse_json(last_response)[:account]
         expect(account[:name]).to eq('new account name')
 
         get '/accounts'
-        expect(parse_json(last_response)[:accounts].count).to eq(4)
+        expect(last_response.status).to eq(200)
+        accounts = parse_json(last_response)[:accounts]
+        expect(accounts.count).to eq(4)
       end
     end
 
@@ -130,7 +133,9 @@ describe Scrooge do
         expect(last_response.body).to be_empty
 
         get '/accounts'
-        expect(parse_json(last_response)[:accounts].count).to eq(3)
+        expect(last_response.status).to eq(200)
+        accounts = parse_json(last_response)[:accounts]
+        expect(accounts.count).to eq(3)
       end
     end
   end
@@ -139,7 +144,7 @@ describe Scrooge do
     context 'when the account exists' do
       it 'deletes the account' do
         delete '/accounts/1'
-        expect(last_response).to be_ok
+        expect(last_response.status).to eq(200)
 
         account = parse_json(last_response)[:account]
         expect(account[:id]).to eq(1)
@@ -149,14 +154,15 @@ describe Scrooge do
         expect(last_response.status).to eq(404)
 
         get '/accounts'
-        expect(parse_json(last_response)[:accounts].count).to eq(2)
+        expect(last_response.status).to eq(200)
+        accounts = parse_json(last_response)[:accounts]
+        expect(accounts.count).to eq(2)
       end
     end
 
     context 'when the account doesn\'t exist' do
       it 'returns 404' do
         delete '/accounts/123'
-        expect(last_response).not_to be_ok
         expect(last_response.status).to eq(404)
       end
     end
