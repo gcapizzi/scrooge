@@ -84,7 +84,7 @@ describe Scrooge do
           new_name = 'new account name'
 
           put '/accounts/123', name: new_name
-          expect(last_response.status).to eq(200)
+          expect(last_response.status).to eq(201)
           account = parse_json(last_response)[:account]
           expect(account[:id]).to eq(123)
           expect(account[:name]).to eq(new_name)
@@ -115,7 +115,7 @@ describe Scrooge do
     context 'when params are valid' do
       it 'creates a new account' do
         post '/accounts', name: 'new account name'
-        expect(last_response.status).to eq(200)
+        expect(last_response.status).to eq(201)
         account = parse_json(last_response)[:account]
         expect(account[:name]).to eq('new account name')
 
