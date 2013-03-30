@@ -16,6 +16,7 @@ module Scrooge
     end
 
     configure :test do
+      enable :logging, :dump_errors, :raise_errors
       DataMapper.setup(:default, 'sqlite::memory:')
     end
 

@@ -1,6 +1,8 @@
 require 'rubygems'
 require 'bundler/setup'
 
+ENV['RACK_ENV'] = 'test'
+
 # Setup SimpleCov
 
 require 'simplecov'
