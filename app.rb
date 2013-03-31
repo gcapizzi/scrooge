@@ -47,8 +47,14 @@ module Scrooge
         @account = Account.create(id: params[:id].to_i, name: params[:name])
         status = 201
       else
-        @account.update(name: params[:name])
-        status = 200
+        @account.name = params[:name]
+
+        if @account.dirty?
+          status = 200
+          @account.save
+        else
+          status = 304
+        end
       end
 
       return status 400 if not @account.valid?

@@ -51,16 +51,26 @@ describe Scrooge do
   describe 'PUT /accounts/:id' do
     context 'when the account exists' do
       context 'when params are valid' do
-        it 'updates the account' do
-          new_name = 'new account name'
+        context 'when something has changed' do
+          it 'updates the account' do
+            new_name = 'new account name'
 
-          put '/accounts/1', name: new_name
-          expect(last_response.status).to eq(200)
+            put '/accounts/1', name: new_name
+            expect(last_response.status).to eq(200)
 
-          get '/accounts/1'
-          expect(last_response.status).to eq(200)
-          account = parse_json(last_response)[:account]
-          expect(account[:name]).to eq(new_name)
+            get '/accounts/1'
+            account = parse_json(last_response)[:account]
+            expect(account[:name]).to eq(new_name)
+          end
+        end
+
+        context 'when nothing has changed' do
+          it 'returns a 304 Not Modified and doesn\'t update the account' do
+            put '/accounts/1', name: "new name"
+            expect(last_response.status).to eq(200)
+            put '/accounts/1', name: "new name"
+            expect(last_response.status).to eq(304)
+          end
         end
       end
 
