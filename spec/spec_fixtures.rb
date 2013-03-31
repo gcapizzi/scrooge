@@ -18,7 +18,7 @@ module Scrooge
 
   Transaction.fix {{
     description: /\w+/.gen,
-    amount: 12.34
+    amount: BigDecimal.new("12.34")
   }}
 
 end

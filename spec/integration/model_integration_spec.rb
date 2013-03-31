@@ -25,12 +25,15 @@ module Scrooge
 
   describe Transaction do
     it 'is wired correctly' do
-      transaction = Transaction.make
+      description = "test transaction"
+      amount = BigDecimal.new("12.34")
+      transaction = Transaction.make(description: description, amount: amount)
       account = Account.gen(:valid)
       transaction.account = account
       transaction.save
       transaction_on_db = Transaction.get(transaction.id)
-      expect(transaction_on_db).to eq(transaction)
+      expect(transaction_on_db.description).to eq(description)
+      expect(transaction_on_db.amount).to eq(amount)
       expect(transaction_on_db.account).to eq(account)
     end
   end
