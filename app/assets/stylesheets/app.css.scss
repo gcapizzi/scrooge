@@ -1,2 +1,10 @@
-//= require normalize
-//= require foundation
+@import "normalize";
+@import "foundation";
+
+#container {
+  @include grid-row;
+}
+
+header {
+  @include grid-column(12);
+}

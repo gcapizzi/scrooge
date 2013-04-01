@@ -10,6 +10,8 @@ require './app/model'
 module Scrooge
 
   class App < Sinatra::Base
+    set :public_folder, "#{Dir.pwd}/public"
+
     configure :development do
       DataMapper.setup(:default, "sqlite://#{Dir.pwd}/db/scrooge.db")
       register Sinatra::Reloader
@@ -27,6 +29,10 @@ module Scrooge
         options = { format: 'json' }.merge options
         render :rabl, template, options, locals
       end
+    end
+
+    get '/' do
+      send_file File.join(settings.public_folder, 'index.html')
     end
 
     get '/accounts' do
