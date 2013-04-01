@@ -3,7 +3,7 @@ require 'bundler/setup'
 
 require 'dm-sweatshop'
 
-require './model'
+require './app/model'
 
 module Scrooge
 

@@ -1,5 +1,5 @@
 require 'rubygems'
 require 'bundler/setup'
 
-require './app'
+require './app/app'
 run Scrooge::App

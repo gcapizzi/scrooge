@@ -2,8 +2,8 @@ require 'spec_helper'
 
 require 'rack/test'
 
-require './model'
-require './app'
+require './app/model'
+require './app/app'
 
 describe Scrooge do
   include Rack::Test::Methods
