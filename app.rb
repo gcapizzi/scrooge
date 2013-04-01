@@ -45,27 +45,28 @@ module Scrooge
 
       if @account.nil?
         @account = Account.create(id: params[:id].to_i, name: params[:name])
-        status = 201
+        status 201
       else
         @account.name = params[:name]
 
         if @account.dirty?
-          status = 200
+          status 200
           @account.save
         else
-          status = 304
+          status 304
         end
       end
 
       return status 400 if not @account.valid?
 
-      [status, rabl(:account)]
+      rabl :account
     end
 
     post '/accounts' do
       @account = Account.create(params)
       return status 400 if not @account.saved?
-      [201, rabl(:account)]
+      status 201
+      rabl :account
     end
 
     delete '/accounts/:id' do |id|
