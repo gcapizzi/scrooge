@@ -48,13 +48,8 @@ module Scrooge
         status 201
       else
         @account.name = params[:name]
-
-        if @account.dirty?
-          status 200
-          @account.save
-        else
-          status 304
-        end
+        status 304 if not @account.dirty?
+        @account.save
       end
 
       return status 400 if not @account.valid?
