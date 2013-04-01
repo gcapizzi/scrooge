@@ -5,6 +5,9 @@ gem 'sinatra'
 gem 'sinatra-contrib'
 gem 'rabl'
 gem 'oj'
+gem 'sprockets', '~> 2.0'
+gem 'sass'
+gem 'zurb-foundation'
 
 group :test do
   gem 'rspec'
