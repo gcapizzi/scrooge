@@ -41,8 +41,7 @@ module Scrooge
     end
 
     get '/accounts/:id' do |id|
-      @account = Account.get(id.to_i)
-      return status 404 if @account.nil?
+      @account = Account.get(id.to_i) or halt 404
       rabl :account
     end
 
@@ -58,26 +57,30 @@ module Scrooge
         @account.save
       end
 
-      return status 400 if not @account.valid?
+      halt 400 if not @account.valid?
 
       rabl :account
     end
 
     post '/accounts' do
       @account = Account.create(params)
-      return status 400 if not @account.saved?
-      status 201
-      rabl :account
+      if @account.saved?
+        status 201
+        rabl :account
+      else
+        status 400
+        # TODO errors?
+      end
     end
 
     delete '/accounts/:id' do |id|
-      @account = Account.get(id.to_i)
-      return status 404 if @account.nil?
+      @account = Account.get(id.to_i) or halt 404
 
       if @account.destroy
         rabl :account
       else
-        status 500
+        status 400
+        # TODO errors?
       end
     end
   end
