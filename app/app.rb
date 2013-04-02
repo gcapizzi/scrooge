@@ -57,7 +57,7 @@ module Scrooge
         @account.save
       end
 
-      halt 400 if not @account.valid?
+      halt 406 if not @account.valid?
 
       rabl :account
     end
@@ -68,7 +68,7 @@ module Scrooge
         status 201
         rabl :account
       else
-        status 400
+        status 406
         # TODO errors?
       end
     end
@@ -79,7 +79,7 @@ module Scrooge
       if @account.destroy
         rabl :account
       else
-        status 400
+        status 406
         # TODO errors?
       end
     end
