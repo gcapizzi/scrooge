@@ -15,15 +15,32 @@
     <script src="/assets/vendor/custom.modernizr.js"></script>
   </head>
   <body>
-    <div id="container">
+
+    <script type="text/x-handlebars">
+      <div id="container">
+
       <header>
         <h1>Scrooge</h1>
       </header>
       <hr />
-    </div>
+
+      {{outlet}}
+
+      </div>
+    </script>
+
+    <script type="text/x-handlebars" id="index">
+      <ul id="accounts">
+        {{#each model}}
+          <li>{{name}}</li>
+        {{/each}}
+      </ul>
+    </script>
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="/js/jquery-1.9.1.min.js"><\/script>')</script>
+    <script src="/js/handlebars-1.0.0-rc.3.js"></script>
+    <script src="/js/ember-1.0.0-rc.2.js"></script>
     <script src="/assets/app.js"></script>
   </body>
 </html>
