@@ -46,13 +46,8 @@ module Scrooge
     end
 
     put '/accounts/:id' do |id|
-      @account = Account.get(id.to_i)
-
-      if @account.nil?
-        @account = Account.new(id: id.to_i)
-        status 201
-      end
-
+      @account = Account.first_or_new(id: id.to_i)
+      status 201 if @account.new?
       @account.name = params[:name]
 
       if @account.save
