@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'bundler/setup'
 require 'sprockets'
+require 'sass'
 
 require './app/app'
 
