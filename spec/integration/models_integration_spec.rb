@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'spec_fixtures'
 
-require './app/model'
+require './app/models'
 
 DataMapper.setup(:default, 'sqlite3::memory:')
 DataMapper.auto_migrate!

@@ -2,7 +2,7 @@ require 'spec_helper'
 
 require 'rack/test'
 
-require './app/model'
+require './app/models'
 require './app/app'
 
 describe Scrooge do
