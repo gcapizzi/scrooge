@@ -3,9 +3,9 @@ require 'bundler/setup'
 
 require 'sinatra/base'
 require 'sinatra/reloader'
-require 'rabl'
 
 require './app/models'
+require './app/renderers'
 
 module Scrooge
 
@@ -22,13 +22,8 @@ module Scrooge
       DataMapper.setup(:default, 'sqlite::memory:')
     end
 
-    helpers do
-      def rabl(template, options = {}, locals = {})
-        Rabl.register!
-        content_type 'application/json'
-        options = { format: 'json' }.merge options
-        render :rabl, template, options, locals
-      end
+    before do
+      @renderer = AccountJsonRenderer.new
     end
 
     get '/' do
@@ -36,22 +31,21 @@ module Scrooge
     end
 
     get '/accounts' do
-      @accounts = Account.all
-      rabl :accounts
+      @renderer.render_list(Account.all)
     end
 
     get '/accounts/:id' do |id|
-      @account = Account.get(id.to_i) or halt 404
-      rabl :account
+      account = Account.get(id.to_i) or halt 404
+      @renderer.render(account)
     end
 
     put '/accounts/:id' do |id|
-      @account = Account.first_or_new(id: id.to_i)
-      status 201 if @account.new?
-      @account.name = params[:name]
+      account = Account.first_or_new(id: id.to_i)
+      status 201 if account.new?
+      account.name = params[:name]
 
-      if @account.save
-        rabl :account
+      if account.save
+        @renderer.render(account)
       else
         status 406
         # TODO errors?
@@ -59,10 +53,10 @@ module Scrooge
     end
 
     post '/accounts' do
-      @account = Account.create(params)
-      if @account.saved?
+      account = Account.create(params)
+      if account.saved?
         status 201
-        rabl :account
+        @renderer.render(account)
       else
         status 406
         # TODO errors?
@@ -70,10 +64,10 @@ module Scrooge
     end
 
     delete '/accounts/:id' do |id|
-      @account = Account.get(id.to_i) or halt 404
+      account = Account.get(id.to_i) or halt 404
 
-      if @account.destroy
-        rabl :account
+      if account.destroy
+        @renderer.render(account)
       else
         status 406
         # TODO errors?

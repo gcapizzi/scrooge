@@ -11,5 +11,5 @@ SimpleCov.start
 # Helper functions
 
 def parse_json(json_response)
-  Oj.load(json_response.body, symbol_keys: true)
+  JSON.parse(json_response.body, symbolize_names: true)
 end
