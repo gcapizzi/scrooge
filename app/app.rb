@@ -66,7 +66,7 @@ module Scrooge
     delete '/accounts/:id' do |id|
       account = Account.get(id.to_i) or halt 404
 
-      if account.destroy
+      if account.transactions.destroy && account.destroy
         @renderer.render(account)
       else
         status 406

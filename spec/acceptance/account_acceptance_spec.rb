@@ -9,24 +9,50 @@ describe Scrooge do
   include Rack::Test::Methods
 
   let(:app) { Scrooge::App }
-  let(:accounts) {{
-      accounts: (1..3).map do |i|
-        { account: { id: i, name: "test account #{i}" } }
+  let(:accounts) do
+    (1..3).map do |i|
+      { id: i, name: "test account #{i}" }
+    end
+  end
+  let(:accounts_json) do
+    accounts_list = []
+    transaction_ids = (1..9).to_a
+    accounts.each do |account|
+      account[:transaction_ids] = transaction_ids.shift(3)
+      accounts_list << { account: account }
+    end
+    { accounts: accounts_list }
+  end
+  let(:transactions) do
+    transactions = []
+    accounts_json[:accounts].each do |account|
+      account[:account][:transaction_ids].each do |id|
+        transaction = {
+          id: id,
+          description: "test transaction #{id}",
+          amount: 1.0,
+          account_id: account[:account][:id]
+        }
+        transactions << transaction
       end
-  }}
+    end
+    transactions
+  end
+  let(:transactions_json) do
+    { transactions: transactions.map { |t| { transaction: t } } }
+  end
 
   before do
     DataMapper.auto_migrate!
-    accounts[:accounts].each do |account|
-      Scrooge::Account.create(account[:account])
-    end
+    accounts.each { |account| Scrooge::Account.create(account) }
+    transactions.each { |transaction| Scrooge::Transaction.create(transaction) }
   end
 
   describe 'GET /accounts' do
     it 'returns all accounts' do
       get '/accounts'
       expect(last_response.status).to eq(200)
-      expect(parse_json(last_response)).to eq(accounts)
+      expect(parse_json(last_response)).to eq(accounts_json)
     end
   end
 
@@ -35,7 +61,7 @@ describe Scrooge do
       it 'returns the specified account' do
         get '/accounts/1'
         expect(last_response.status).to eq(200)
-        expect(parse_json(last_response)).to eq(accounts[:accounts].first)
+        expect(parse_json(last_response)).to eq(accounts_json[:accounts].first)
       end
     end
 
