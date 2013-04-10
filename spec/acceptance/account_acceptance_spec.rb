@@ -13,6 +13,7 @@ describe Scrooge do
   before do
     DataMapper.auto_migrate!
     @accounts = (1..3).map { Scrooge::Account.gen(:valid) }
+    @account = @accounts.first
     @accounts_json = {
       accounts: @accounts.map do |a|
         attrs = a.attributes
@@ -21,7 +22,7 @@ describe Scrooge do
       end
     }
     @transactions_json = {
-      transactions: @accounts.first.transactions.map do |t|
+      transactions: @account.transactions.map do |t|
         attrs = t.attributes
         attrs[:amount] = t.amount.to_s('F')
         { transaction: attrs }
@@ -40,8 +41,7 @@ describe Scrooge do
   describe 'GET /accounts/:id' do
     context 'when the account exists' do
       it 'returns the specified account' do
-        account_id = @accounts.first.id
-        get "/accounts/#{account_id}"
+        get "/accounts/#{@account.id}"
         expect(last_response.status).to eq(200)
         expect(parse_json(last_response)).to eq(@accounts_json[:accounts].first)
       end
@@ -61,12 +61,11 @@ describe Scrooge do
       context 'when params are valid' do
         it 'updates the account' do
           new_name = 'new account name'
-          account_id = @accounts.first.id
 
-          put "/accounts/#{account_id}", name: new_name
+          put "/accounts/#{@account.id}", name: new_name
           expect(last_response.status).to eq(200)
 
-          get "/accounts/#{account_id}"
+          get "/accounts/#{@account.id}"
           account_json = parse_json(last_response)[:account]
           expect(account_json[:name]).to eq(new_name)
         end
@@ -74,13 +73,11 @@ describe Scrooge do
 
       context 'when params are invalid' do
         it 'returns a 406 Not Acceptable and doesn\'t update the account' do
-          account_id = @accounts.first.id
-
-          put "/accounts/#{account_id}", name: ''
+          put "/accounts/#{@account.id}", name: ''
           expect(last_response.status).to eq(406)
           expect(last_response.body).to be_empty
 
-          get "/accounts/#{account_id}"
+          get "/accounts/#{@account.id}"
           expect(last_response.status).to eq(200)
           account_json = parse_json(last_response)[:account]
           expect(account_json[:name]).not_to be_empty
@@ -153,16 +150,14 @@ describe Scrooge do
   describe 'DELETE /accounts/:id' do
     context 'when the account exists' do
       it 'deletes the account' do
-        account = @accounts.first
-
-        delete "/accounts/#{account.id}"
+        delete "/accounts/#{@account.id}"
         expect(last_response.status).to eq(200)
 
         account_json = parse_json(last_response)[:account]
-        expect(account_json[:id]).to eq(account.id)
-        expect(account_json[:name]).to eq(account.name)
+        expect(account_json[:id]).to eq(@account.id)
+        expect(account_json[:name]).to eq(@account.name)
 
-        get "/accounts/#{account.id}"
+        get "/accounts/#{@account.id}"
         expect(last_response.status).to eq(404)
 
         get '/accounts'
@@ -183,9 +178,7 @@ describe Scrooge do
   describe 'GET /accounts/:id/transactions' do
     context 'when the account exists' do
       it 'lists account transactions' do
-        account = @accounts.first
-
-        get "/accounts/#{account.id}/transactions"
+        get "/accounts/#{@account.id}/transactions"
         expect(last_response.status).to eq(200)
 
         transactions_json = parse_json(last_response)
