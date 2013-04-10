@@ -9,59 +9,34 @@ describe Scrooge do
   include Rack::Test::Methods
 
   let(:app) { Scrooge::App }
-  let(:accounts) do
-    (1..3).map do |i|
-      { id: i, name: "test account #{i}" }
-    end
-  end
-  let(:accounts_json) do
-    accounts_list = []
-    transaction_ids = (1..9).to_a
-    accounts.each do |account|
-      account[:transaction_ids] = transaction_ids.shift(3)
-      accounts_list << { account: account }
-    end
-    { accounts: accounts_list }
-  end
-  let(:transactions) do
-    transactions = []
-    accounts_json[:accounts].each do |account|
-      account[:account][:transaction_ids].each do |id|
-        transaction = {
-          id: id,
-          description: "test transaction #{id}",
-          amount: 1.0,
-          account_id: account[:account][:id]
-        }
-        transactions << transaction
-      end
-    end
-    transactions
-  end
-  let(:transactions_json) do
-    { transactions: transactions.map { |t| { transaction: t } } }
-  end
 
   before do
     DataMapper.auto_migrate!
-    accounts.each { |account| Scrooge::Account.create(account) }
-    transactions.each { |transaction| Scrooge::Transaction.create(transaction) }
+    @accounts = (1..3).map { Scrooge::Account.gen(:valid) }
+    @accounts_json = {
+      accounts: @accounts.map do |account|
+        attrs = account.attributes
+        attrs[:transaction_ids] = account.transactions.map { |t| t.id }
+        { account: attrs }
+      end
+    }
   end
 
   describe 'GET /accounts' do
     it 'returns all accounts' do
       get '/accounts'
       expect(last_response.status).to eq(200)
-      expect(parse_json(last_response)).to eq(accounts_json)
+      expect(parse_json(last_response)).to eq(@accounts_json)
     end
   end
 
   describe 'GET /accounts/:id' do
     context 'when the account exists' do
       it 'returns the specified account' do
-        get '/accounts/1'
+        account_id = @accounts.first.id
+        get "/accounts/#{account_id}"
         expect(last_response.status).to eq(200)
-        expect(parse_json(last_response)).to eq(accounts_json[:accounts].first)
+        expect(parse_json(last_response)).to eq(@accounts_json[:accounts].first)
       end
     end
 
@@ -79,26 +54,29 @@ describe Scrooge do
       context 'when params are valid' do
         it 'updates the account' do
           new_name = 'new account name'
+          account_id = @accounts.first.id
 
-          put '/accounts/1', name: new_name
+          put "/accounts/#{account_id}", name: new_name
           expect(last_response.status).to eq(200)
 
-          get '/accounts/1'
-          account = parse_json(last_response)[:account]
-          expect(account[:name]).to eq(new_name)
+          get "/accounts/#{account_id}"
+          account_json = parse_json(last_response)[:account]
+          expect(account_json[:name]).to eq(new_name)
         end
       end
 
       context 'when params are invalid' do
         it 'returns a 406 Not Acceptable and doesn\'t update the account' do
-          put '/accounts/1', name: ''
+          account_id = @accounts.first.id
+
+          put "/accounts/#{account_id}", name: ''
           expect(last_response.status).to eq(406)
           expect(last_response.body).to be_empty
 
-          get '/accounts/1'
+          get "/accounts/#{account_id}"
           expect(last_response.status).to eq(200)
-          account = parse_json(last_response)[:account]
-          expect(account[:name]).not_to be_empty
+          account_json = parse_json(last_response)[:account]
+          expect(account_json[:name]).not_to be_empty
         end
       end
     end
@@ -110,14 +88,14 @@ describe Scrooge do
 
           put '/accounts/123', name: new_name
           expect(last_response.status).to eq(201)
-          account = parse_json(last_response)[:account]
-          expect(account[:id]).to eq(123)
-          expect(account[:name]).to eq(new_name)
+          account_json = parse_json(last_response)[:account]
+          expect(account_json[:id]).to eq(123)
+          expect(account_json[:name]).to eq(new_name)
 
           get '/accounts/123'
           expect(last_response.status).to eq(200)
-          account = parse_json(last_response)[:account]
-          expect(account[:name]).to eq(new_name)
+          account_json = parse_json(last_response)[:account]
+          expect(account_json[:name]).to eq(new_name)
         end
       end
 
@@ -141,13 +119,13 @@ describe Scrooge do
       it 'creates a new account' do
         post '/accounts', name: 'new account name'
         expect(last_response.status).to eq(201)
-        account = parse_json(last_response)[:account]
-        expect(account[:name]).to eq('new account name')
+        account_json = parse_json(last_response)[:account]
+        expect(account_json[:name]).to eq('new account name')
 
         get '/accounts'
         expect(last_response.status).to eq(200)
-        accounts = parse_json(last_response)[:accounts]
-        expect(accounts.count).to eq(4)
+        accounts_json = parse_json(last_response)[:accounts]
+        expect(accounts_json.count).to eq(4)
       end
     end
 
@@ -159,8 +137,8 @@ describe Scrooge do
 
         get '/accounts'
         expect(last_response.status).to eq(200)
-        accounts = parse_json(last_response)[:accounts]
-        expect(accounts.count).to eq(3)
+        accounts_json = parse_json(last_response)[:accounts]
+        expect(accounts_json.count).to eq(3)
       end
     end
   end
@@ -168,20 +146,22 @@ describe Scrooge do
   describe 'DELETE /accounts/:id' do
     context 'when the account exists' do
       it 'deletes the account' do
-        delete '/accounts/1'
+        account = @accounts.first
+
+        delete "/accounts/#{account.id}"
         expect(last_response.status).to eq(200)
 
-        account = parse_json(last_response)[:account]
-        expect(account[:id]).to eq(1)
-        expect(account[:name]).to eq("test account 1")
+        account_json = parse_json(last_response)[:account]
+        expect(account_json[:id]).to eq(account.id)
+        expect(account_json[:name]).to eq(account.name)
 
-        get '/accounts/1'
+        get "/accounts/#{account.id}"
         expect(last_response.status).to eq(404)
 
         get '/accounts'
         expect(last_response.status).to eq(200)
-        accounts = parse_json(last_response)[:accounts]
-        expect(accounts.count).to eq(2)
+        accounts_json = parse_json(last_response)[:accounts]
+        expect(accounts_json.count).to eq(2)
       end
     end
 
