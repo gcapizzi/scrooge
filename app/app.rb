@@ -23,7 +23,8 @@ module Scrooge
     end
 
     before do
-      @renderer = AccountJsonRenderer.new
+      @account_renderer = AccountJsonRenderer.new
+      @transaction_renderer = TransactionJsonRenderer.new
     end
 
     get '/' do
@@ -31,12 +32,12 @@ module Scrooge
     end
 
     get '/accounts' do
-      @renderer.render_list(Account.all)
+      @account_renderer.render_list(Account.all)
     end
 
     get '/accounts/:id' do |id|
       account = Account.get(id.to_i) or halt 404
-      @renderer.render(account)
+      @account_renderer.render(account)
     end
 
     put '/accounts/:id' do |id|
@@ -45,7 +46,7 @@ module Scrooge
       account.name = params[:name]
 
       if account.save
-        @renderer.render(account)
+        @account_renderer.render(account)
       else
         status 406
         # TODO errors?
@@ -56,7 +57,7 @@ module Scrooge
       account = Account.create(params)
       if account.saved?
         status 201
-        @renderer.render(account)
+        @account_renderer.render(account)
       else
         status 406
         # TODO errors?
@@ -67,11 +68,17 @@ module Scrooge
       account = Account.get(id.to_i) or halt 404
 
       if account.transactions.destroy && account.destroy
-        @renderer.render(account)
+        @account_renderer.render(account)
       else
         status 406
         # TODO errors?
       end
+    end
+
+    get '/accounts/:id/transactions' do |id|
+      account = Account.get(id.to_i) or halt 404
+      transactions = account.transactions
+      @transaction_renderer.render_list(transactions)
     end
   end
 

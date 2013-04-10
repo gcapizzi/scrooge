@@ -14,10 +14,17 @@ describe Scrooge do
     DataMapper.auto_migrate!
     @accounts = (1..3).map { Scrooge::Account.gen(:valid) }
     @accounts_json = {
-      accounts: @accounts.map do |account|
-        attrs = account.attributes
-        attrs[:transaction_ids] = account.transactions.map { |t| t.id }
+      accounts: @accounts.map do |a|
+        attrs = a.attributes
+        attrs[:transaction_ids] = a.transactions.map { |t| t.id }
         { account: attrs }
+      end
+    }
+    @transactions_json = {
+      transactions: @accounts.first.transactions.map do |t|
+        attrs = t.attributes
+        attrs[:amount] = t.amount.to_s('F')
+        { transaction: attrs }
       end
     }
   end
@@ -171,5 +178,21 @@ describe Scrooge do
         expect(last_response.status).to eq(404)
       end
     end
+  end
+
+  describe 'GET /accounts/:id/transactions' do
+    context 'when the account exists' do
+      it 'lists account transactions' do
+        account = @accounts.first
+
+        get "/accounts/#{account.id}/transactions"
+        expect(last_response.status).to eq(200)
+
+        transactions_json = parse_json(last_response)
+        expect(transactions_json).to eq(@transactions_json)
+      end
+    end
+
+    context 'when the account doesn\'t exist'
   end
 end
