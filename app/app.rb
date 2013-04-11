@@ -3,14 +3,15 @@ require 'bundler/setup'
 
 require 'sinatra/base'
 require 'sinatra/reloader'
+require 'rabl'
 
 require './app/models'
-require './app/renderers'
 
 module Scrooge
 
   class App < Sinatra::Base
     set :public_folder, "#{Dir.pwd}/public"
+    Rabl.register!
 
     configure :development do
       DataMapper.setup(:default, "sqlite://#{Dir.pwd}/db/scrooge.db")
@@ -22,31 +23,27 @@ module Scrooge
       DataMapper.setup(:default, 'sqlite::memory:')
     end
 
-    before do
-      @account_renderer = AccountJsonRenderer.new
-      @transaction_renderer = TransactionJsonRenderer.new
-    end
-
     get '/' do
       send_file File.join(settings.public_folder, 'index.html')
     end
 
     get '/accounts' do
-      @account_renderer.render_list(Account.all)
+      @accounts = Account.all
+      rabl :accounts
     end
 
     get '/accounts/:id' do |id|
-      account = Account.get(id.to_i) or halt 404
-      @account_renderer.render(account)
+      @account = Account.get(id.to_i) or halt 404
+      rabl :account
     end
 
     put '/accounts/:id' do |id|
-      account = Account.first_or_new(id: id.to_i)
-      status 201 if account.new?
-      account.name = params[:name]
+      @account = Account.first_or_new(id: id.to_i)
+      status 201 if @account.new?
+      @account.name = params[:name]
 
-      if account.save
-        @account_renderer.render(account)
+      if @account.save
+        rabl :account
       else
         status 406
         # TODO errors?
@@ -54,10 +51,10 @@ module Scrooge
     end
 
     post '/accounts' do
-      account = Account.create(params)
-      if account.saved?
+      @account = Account.create(params)
+      if @account.saved?
         status 201
-        @account_renderer.render(account)
+        rabl :account
       else
         status 406
         # TODO errors?
@@ -65,10 +62,10 @@ module Scrooge
     end
 
     delete '/accounts/:id' do |id|
-      account = Account.get(id.to_i) or halt 404
+      @account = Account.get(id.to_i) or halt 404
 
-      if account.transactions.destroy && account.destroy
-        @account_renderer.render(account)
+      if @account.transactions.destroy && @account.destroy
+        rabl :account
       else
         status 406
         # TODO errors?
@@ -76,9 +73,9 @@ module Scrooge
     end
 
     get '/accounts/:id/transactions' do |id|
-      account = Account.get(id.to_i) or halt 404
-      transactions = account.transactions
-      @transaction_renderer.render_list(transactions)
+      @account = Account.get(id.to_i) or halt 404
+      @transactions = @account.transactions
+      rabl :transactions
     end
   end
 
