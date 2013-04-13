@@ -13,5 +13,5 @@ SimpleCov.start
 require 'json'
 
 def parse_json(json_response)
-  JSON.parse(json_response.body, symbolize_names: true)
+  JSON.parse(json_response, symbolize_names: true)
 end

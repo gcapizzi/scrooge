@@ -34,7 +34,7 @@ describe Scrooge do
     it 'returns all accounts' do
       get '/accounts'
       expect(last_response.status).to eq(200)
-      expect(parse_json(last_response)).to eq(@accounts_json)
+      expect(parse_json(last_response.body)).to eq(@accounts_json)
     end
   end
 
@@ -43,7 +43,7 @@ describe Scrooge do
       it 'returns the specified account' do
         get "/accounts/#{@account.id}"
         expect(last_response.status).to eq(200)
-        expect(parse_json(last_response)).to eq(@accounts_json[:accounts].first)
+        expect(parse_json(last_response.body)).to eq(@accounts_json[:accounts].first)
       end
     end
 
@@ -66,7 +66,7 @@ describe Scrooge do
           expect(last_response.status).to eq(200)
 
           get "/accounts/#{@account.id}"
-          account_json = parse_json(last_response)[:account]
+          account_json = parse_json(last_response.body)[:account]
           expect(account_json[:name]).to eq(new_name)
         end
       end
@@ -79,7 +79,7 @@ describe Scrooge do
 
           get "/accounts/#{@account.id}"
           expect(last_response.status).to eq(200)
-          account_json = parse_json(last_response)[:account]
+          account_json = parse_json(last_response.body)[:account]
           expect(account_json[:name]).not_to be_empty
         end
       end
@@ -92,13 +92,13 @@ describe Scrooge do
 
           put '/accounts/123', name: new_name
           expect(last_response.status).to eq(201)
-          account_json = parse_json(last_response)[:account]
+          account_json = parse_json(last_response.body)[:account]
           expect(account_json[:id]).to eq(123)
           expect(account_json[:name]).to eq(new_name)
 
           get '/accounts/123'
           expect(last_response.status).to eq(200)
-          account_json = parse_json(last_response)[:account]
+          account_json = parse_json(last_response.body)[:account]
           expect(account_json[:name]).to eq(new_name)
         end
       end
@@ -123,12 +123,12 @@ describe Scrooge do
       it 'creates a new account' do
         post '/accounts', name: 'new account name'
         expect(last_response.status).to eq(201)
-        account_json = parse_json(last_response)[:account]
+        account_json = parse_json(last_response.body)[:account]
         expect(account_json[:name]).to eq('new account name')
 
         get '/accounts'
         expect(last_response.status).to eq(200)
-        accounts_json = parse_json(last_response)[:accounts]
+        accounts_json = parse_json(last_response.body)[:accounts]
         expect(accounts_json.count).to eq(4)
       end
     end
@@ -141,7 +141,7 @@ describe Scrooge do
 
         get '/accounts'
         expect(last_response.status).to eq(200)
-        accounts_json = parse_json(last_response)[:accounts]
+        accounts_json = parse_json(last_response.body)[:accounts]
         expect(accounts_json.count).to eq(3)
       end
     end
@@ -153,7 +153,7 @@ describe Scrooge do
         delete "/accounts/#{@account.id}"
         expect(last_response.status).to eq(200)
 
-        account_json = parse_json(last_response)[:account]
+        account_json = parse_json(last_response.body)[:account]
         expect(account_json[:id]).to eq(@account.id)
         expect(account_json[:name]).to eq(@account.name)
 
@@ -162,7 +162,7 @@ describe Scrooge do
 
         get '/accounts'
         expect(last_response.status).to eq(200)
-        accounts_json = parse_json(last_response)[:accounts]
+        accounts_json = parse_json(last_response.body)[:accounts]
         expect(accounts_json.count).to eq(2)
       end
     end
@@ -181,7 +181,7 @@ describe Scrooge do
         get "/accounts/#{@account.id}/transactions"
         expect(last_response.status).to eq(200)
 
-        transactions_json = parse_json(last_response)
+        transactions_json = parse_json(last_response.body)
         expect(transactions_json).to eq(@transactions_json)
       end
     end
