@@ -27,20 +27,15 @@ module Scrooge
     before do
       @account_renderer = AccountJsonRenderer.new('app/views')
       @transaction_renderer = TransactionJsonRenderer.new('app/views')
+      @account_controller = Controller.new(Account, @account_renderer)
     end
 
     get '/' do
       send_file File.join(settings.public_folder, 'index.html')
     end
 
-    get '/accounts' do
-      @account_renderer.render_collection(Account.all)
-    end
-
-    get '/accounts/:id' do |id|
-      account = Account.get(id.to_i) or halt 404
-      @account_renderer.render_object(account)
-    end
+    get('/accounts') { @account_controller.index }
+    get('/accounts/:id') { |id| @account_controller.show(id) }
 
     put '/accounts/:id' do |id|
       account = Account.first_or_new(id: id.to_i)
