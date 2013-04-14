@@ -12,7 +12,6 @@ module Scrooge
 
   class App < Sinatra::Base
     set :public_folder, "#{Dir.pwd}/public"
-    Rabl.register!
 
     configure :development do
       DataMapper.setup(:default, "sqlite://#{Dir.pwd}/db/scrooge.db")
