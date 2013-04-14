@@ -18,20 +18,21 @@ module Scrooge
       account_json = renderer.render_object(account)
       account_hash = parse_json(account_json)[:account]
 
-      expect(account_hash[:id]).to eq(account.id)
-      expect(account_hash[:name]).to eq(account.name)
-      expect(account_hash[:transaction_ids].count).to eq(3)
-      expect(account_hash[:transaction_ids].first).to eq(account.transactions.first.id)
+      expect_account_attributes(account_hash, account)
     end
 
     it 'serializes a collection of accounts to JSON' do
       accounts_json = renderer.render_collection(accounts)
       account_hash = parse_json(accounts_json)[:accounts].first[:account]
 
-      expect(account_hash[:id]).to eq(account.id)
-      expect(account_hash[:name]).to eq(account.name)
-      expect(account_hash[:transaction_ids].count).to eq(3)
-      expect(account_hash[:transaction_ids].first).to eq(account.transactions.first.id)
+      expect_account_attributes(account_hash, account)
+    end
+
+    def expect_account_attributes(attributes, account)
+      expect(attributes[:id]).to eq(account.id)
+      expect(attributes[:name]).to eq(account.name)
+      expect(attributes[:transaction_ids].count).to eq(account.transactions.count)
+      expect(attributes[:transaction_ids].first).to eq(account.transactions.first.id)
     end
   end
 
@@ -45,10 +46,7 @@ module Scrooge
       transaction_json = renderer.render_object(transaction)
       transaction_hash = parse_json(transaction_json)[:transaction]
 
-      expect(transaction_hash[:id]).to eq(transaction.id)
-      expect(transaction_hash[:description]).to eq(transaction.description)
-      expect(transaction_hash[:amount]).to eq(transaction.amount.to_s('F'))
-      expect(transaction_hash[:account_id]).to eq(account.id)
+      expect_transaction_attributes(transaction_hash, transaction)
     end
 
     it 'serializes a collection of transactions to JSON' do
@@ -57,10 +55,14 @@ module Scrooge
       transaction_hash = transactions_array.first[:transaction]
 
       expect(transactions_array.count).to eq(3)
-      expect(transaction_hash[:id]).to eq(transaction.id)
-      expect(transaction_hash[:description]).to eq(transaction.description)
-      expect(transaction_hash[:amount]).to eq(transaction.amount.to_s('F'))
-      expect(transaction_hash[:account_id]).to eq(account.id)
+      expect_transaction_attributes(transaction_hash, transaction)
+    end
+
+    def expect_transaction_attributes(attributes, transaction)
+      expect(attributes[:id]).to eq(transaction.id)
+      expect(attributes[:description]).to eq(transaction.description)
+      expect(attributes[:amount]).to eq(transaction.amount.to_s('F'))
+      expect(attributes[:account_id]).to eq(transaction.account.id)
     end
   end
 end
