@@ -6,6 +6,7 @@ require 'sinatra/reloader'
 require 'rabl'
 
 require './app/models'
+require './app/renderers'
 
 module Scrooge
 
@@ -23,27 +24,31 @@ module Scrooge
       DataMapper.setup(:default, 'sqlite::memory:')
     end
 
+    before do
+      @account_renderer = AccountJsonRenderer.new('app/views')
+      @transaction_renderer = TransactionJsonRenderer.new('app/views')
+    end
+
     get '/' do
       send_file File.join(settings.public_folder, 'index.html')
     end
 
     get '/accounts' do
-      @accounts = Account.all
-      rabl :accounts
+      @account_renderer.render_collection(Account.all)
     end
 
     get '/accounts/:id' do |id|
-      @account = Account.get(id.to_i) or halt 404
-      rabl :account
+      account = Account.get(id.to_i) or halt 404
+      @account_renderer.render_object(account)
     end
 
     put '/accounts/:id' do |id|
-      @account = Account.first_or_new(id: id.to_i)
-      status 201 if @account.new?
-      @account.name = params[:name]
+      account = Account.first_or_new(id: id.to_i)
+      status 201 if account.new?
+      account.name = params[:name]
 
-      if @account.save
-        rabl :account
+      if account.save
+        @account_renderer.render_object(account)
       else
         status 406
         # TODO errors?
@@ -51,10 +56,10 @@ module Scrooge
     end
 
     post '/accounts' do
-      @account = Account.create(params)
-      if @account.saved?
+      account = Account.create(params)
+      if account.saved?
         status 201
-        rabl :account
+        @account_renderer.render_object(account)
       else
         status 406
         # TODO errors?
@@ -62,10 +67,10 @@ module Scrooge
     end
 
     delete '/accounts/:id' do |id|
-      @account = Account.get(id.to_i) or halt 404
+      account = Account.get(id.to_i) or halt 404
 
-      if @account.transactions.destroy && @account.destroy
-        rabl :account
+      if account.transactions.destroy && account.destroy
+        @account_renderer.render_object(account)
       else
         status 406
         # TODO errors?
@@ -73,9 +78,9 @@ module Scrooge
     end
 
     get '/accounts/:id/transactions' do |id|
-      @account = Account.get(id.to_i) or halt 404
-      @transactions = @account.transactions
-      rabl :transactions
+      account = Account.get(id.to_i) or halt 404
+      transactions = account.transactions
+      @transaction_renderer.render_collection(transactions)
     end
   end
 
