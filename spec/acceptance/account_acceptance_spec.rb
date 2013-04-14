@@ -18,14 +18,15 @@ describe Scrooge do
       accounts: @accounts.map do |a|
         attrs = a.attributes
         attrs[:transaction_ids] = a.transactions.map { |t| t.id }
-        { account: attrs }
+        attrs
       end
     }
+    @account_json = { account: @accounts_json[:accounts].first }
     @transactions_json = {
       transactions: @account.transactions.map do |t|
         attrs = t.attributes
         attrs[:amount] = t.amount.to_s('F')
-        { transaction: attrs }
+        attrs
       end
     }
   end
@@ -43,7 +44,7 @@ describe Scrooge do
       it 'returns the specified account' do
         get "/accounts/#{@account.id}"
         expect(last_response.status).to eq(200)
-        expect(parse_json(last_response.body)).to eq(@accounts_json[:accounts].first)
+        expect(parse_json(last_response.body)).to eq(@account_json)
       end
     end
 

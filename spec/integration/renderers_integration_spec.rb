@@ -23,7 +23,7 @@ module Scrooge
 
     it 'serializes a collection of accounts to JSON' do
       accounts_json = renderer.render_collection(accounts)
-      account_hash = parse_json(accounts_json)[:accounts].first[:account]
+      account_hash = parse_json(accounts_json)[:accounts].first
 
       expect_account_attributes(account_hash, account)
     end
@@ -52,7 +52,7 @@ module Scrooge
     it 'serializes a collection of transactions to JSON' do
       transactions_json = renderer.render_collection(transactions)
       transactions_array = parse_json(transactions_json)[:transactions]
-      transaction_hash = transactions_array.first[:transaction]
+      transaction_hash = transactions_array.first
 
       expect(transactions_array.count).to eq(3)
       expect_transaction_attributes(transaction_hash, transaction)
