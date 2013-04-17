@@ -18,8 +18,7 @@ module Scrooge
         renderer.should_receive(:render_collection).with(model_collection).and_return(json_response)
 
         response = controller.index
-        expect(response[0]).to eq(200)
-        expect(response[1]).to eq([json_response])
+        expect(response).to eq([200, [json_response]])
       end
     end
 
@@ -34,22 +33,19 @@ module Scrooge
           renderer.should_receive(:render_object).with(model_object).and_return(json_response)
 
           response = controller.show(id)
-          expect(response[0]).to eq(200)
-          expect(response[1]).to eq([json_response])
+          expect(response).to eq([200, [json_response]])
         end
       end
 
       context 'when the object doesn\'t exist' do
         it 'returns 404' do
           id = 123
-
           model_class.should_receive(:get).with(id).and_return(nil)
           renderer.should_not_receive(:render_object)
 
           response = controller.show(id)
 
-          expect(response[0]).to eq(404)
-          expect(response[1]).to be_empty
+          expect(response).to eq([404, []])
         end
       end
     end
