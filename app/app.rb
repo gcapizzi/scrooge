@@ -32,7 +32,7 @@ module Scrooge
     get('/') { send_file File.join(settings.public_folder, 'index.html') }
 
     get('/accounts') { @account_controller.index }
-    get('/accounts/:id') { |id| @account_controller.show(id) }
+    get('/accounts/:id') { |id| @account_controller.show(id.to_i) }
 
     put '/accounts/:id' do |id|
       account = Account.first_or_new(id: id.to_i)

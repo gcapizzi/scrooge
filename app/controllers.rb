@@ -13,7 +13,7 @@ module Scrooge
     end
 
     def show(id)
-      object = @model_collection.get(id.to_i)
+      object = @model_collection.get(id)
       return [404, []] if object.nil?
       body = @renderer.render_object(object)
       [200, [body]]
