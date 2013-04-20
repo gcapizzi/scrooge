@@ -8,14 +8,15 @@ module Scrooge
 
     def index
       collection = @model_class.all
-      body = [@renderer.render_collection(collection)]
-      [200, body]
+      body = @renderer.render_collection(collection)
+      [200, [body]]
     end
 
     def show(id)
       object = @model_class.get(id)
       return [404, []] if object.nil?
-      [200, [@renderer.render_object(object)]]
+      body = @renderer.render_object(object)
+      [200, [body]]
     end
   end
 
