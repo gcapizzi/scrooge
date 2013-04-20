@@ -6,6 +6,7 @@ require 'sinatra/reloader'
 require 'rabl'
 
 require './app/models'
+require './app/controllers'
 require './app/renderers'
 
 module Scrooge
