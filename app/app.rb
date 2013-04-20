@@ -29,9 +29,7 @@ module Scrooge
       @account_controller = Controller.new(Account, @account_renderer)
     end
 
-    get '/' do
-      send_file File.join(settings.public_folder, 'index.html')
-    end
+    get('/') { send_file File.join(settings.public_folder, 'index.html') }
 
     get('/accounts') { @account_controller.index }
     get('/accounts/:id') { |id| @account_controller.show(id) }
