@@ -3,7 +3,6 @@ require 'bundler/setup'
 
 require 'sinatra/base'
 require 'sinatra/reloader'
-require 'rabl'
 
 require './app/models'
 require './app/controllers'
