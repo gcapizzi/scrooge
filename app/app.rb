@@ -33,8 +33,8 @@ module Scrooge
 
     get('/accounts') { @account_controller.index }
     get('/accounts/:id') { |id| @account_controller.show(id.to_i) }
-    patch('/accounts/:id') { |id| @account_controller.update(id.to_i, name: params[:name]) }
-    post('/accounts') { @account_controller.create(name: params[:name]) }
+    patch('/accounts/:id') { |id| @account_controller.update(id.to_i, params) }
+    post('/accounts') { @account_controller.create(params) }
 
     delete '/accounts/:id' do |id|
       account = Account.get(id.to_i) or halt 404
