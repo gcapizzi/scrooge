@@ -31,6 +31,17 @@ module Scrooge
         [406, []]
       end
     end
+
+    def create(params)
+      object = @model_collection.create(params)
+
+      if object.saved?
+        body = @renderer.render_object(object)
+        [201, [body]]
+      else
+        [406, []]
+      end
+    end
   end
 
 end

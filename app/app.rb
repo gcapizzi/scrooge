@@ -34,17 +34,7 @@ module Scrooge
     get('/accounts') { @account_controller.index }
     get('/accounts/:id') { |id| @account_controller.show(id.to_i) }
     patch('/accounts/:id') { |id| @account_controller.update(id.to_i, name: params[:name]) }
-
-    post '/accounts' do
-      account = Account.create(params)
-      if account.saved?
-        status 201
-        @account_renderer.render_object(account)
-      else
-        status 406
-        # TODO errors?
-      end
-    end
+    post('/accounts') { @account_controller.create(name: params[:name]) }
 
     delete '/accounts/:id' do |id|
       account = Account.get(id.to_i) or halt 404

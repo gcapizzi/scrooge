@@ -49,7 +49,7 @@ module Scrooge
       end
     end
 
-    describe 'PATCH /accounts/:id' do
+    describe '#update' do
       context 'when the account exists' do
         context 'when params are valid' do
           it 'updates the account' do
@@ -90,6 +90,36 @@ module Scrooge
 
           response = controller.update(id, name: '')
           expect(response).to eq([404, []])
+        end
+      end
+    end
+
+    describe '#create' do
+      context 'when params are valid' do
+        it 'creates a new object' do
+          model_object = mock('model object')
+          name = 'a name'
+          json_response = 'Some JSON'
+
+          model_collection.should_receive(:create).with(name: name).and_return(model_object)
+          model_object.should_receive(:saved?).and_return(true)
+          renderer.should_receive(:render_object).with(model_object).and_return(json_response)
+
+          response = controller.create(name: name)
+
+          expect(response).to eq([201, [json_response]])
+        end
+      end
+
+      context 'when params are invalid' do
+        it 'returns a 406 Not Acceptable and doesn\'t create an account' do
+          model_object = mock('model object')
+          model_collection.should_receive(:create).with(name: '').and_return(model_object)
+          model_object.should_receive(:saved?).and_return(false)
+
+          response = controller.create(name: '')
+
+          expect(response).to eq([406, []])
         end
       end
     end
