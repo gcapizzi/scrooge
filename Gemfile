@@ -9,10 +9,11 @@ gem 'zurb-foundation'
 gem 'rabl'
 gem 'oj'
 
-group :test do
+group :test, :development do
   gem 'rspec'
   gem 'rack', require: 'rack/test'
   gem 'simplecov'
   gem 'dm-sqlite-adapter'
   gem 'dm-sweatshop'
+  gem 'debugger'
 end
