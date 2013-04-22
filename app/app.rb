@@ -33,19 +33,7 @@ module Scrooge
 
     get('/accounts') { @account_controller.index }
     get('/accounts/:id') { |id| @account_controller.show(id.to_i) }
-
-    put '/accounts/:id' do |id|
-      account = Account.first_or_new(id: id.to_i)
-      status 201 if account.new?
-      account.name = params[:name]
-
-      if account.save
-        @account_renderer.render_object(account)
-      else
-        status 406
-        # TODO errors?
-      end
-    end
+    patch('/accounts/:id') { |id| @account_controller.update(id.to_i, name: params[:name]) }
 
     post '/accounts' do
       account = Account.create(params)

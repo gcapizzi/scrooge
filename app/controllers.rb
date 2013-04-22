@@ -18,6 +18,19 @@ module Scrooge
       body = @renderer.render_object(object)
       [200, [body]]
     end
+
+    def update(id, params)
+      object = @model_collection.get(id)
+
+      return [404, []] if not object
+
+      if object.update(params)
+        body = @renderer.render_object(object)
+        [200, [body]]
+      else
+        [406, []]
+      end
+    end
   end
 
 end

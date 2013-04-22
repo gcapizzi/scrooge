@@ -58,13 +58,13 @@ describe Scrooge do
     end
   end
 
-  describe 'PUT /accounts/:id' do
+  describe 'PATCH /accounts/:id' do
     context 'when the account exists' do
       context 'when params are valid' do
         it 'updates the account' do
           new_name = 'new account name'
 
-          put "/accounts/#{@account.id}", name: new_name
+          patch "/accounts/#{@account.id}", name: new_name
           expect(last_response.status).to eq(200)
 
           get "/accounts/#{@account.id}"
@@ -75,7 +75,7 @@ describe Scrooge do
 
       context 'when params are invalid' do
         it 'returns a 406 Not Acceptable and doesn\'t update the account' do
-          put "/accounts/#{@account.id}", name: ''
+          patch "/accounts/#{@account.id}", name: ''
           expect(last_response.status).to eq(406)
           expect(last_response.body).to be_empty
 
@@ -88,34 +88,9 @@ describe Scrooge do
     end
 
     context 'when the account doesn\'t exist' do
-      context 'when the params are valid' do
-        it 'creates a new account' do
-          new_name = 'new account name'
-
-          put '/accounts/123', name: new_name
-          expect(last_response.status).to eq(201)
-          account_json = parse_json(last_response.body)[:account]
-          expect(account_json[:id]).to eq(123)
-          expect(account_json[:name]).to eq(new_name)
-
-          get '/accounts/123'
-          expect(last_response.status).to eq(200)
-          account_json = parse_json(last_response.body)[:account]
-          expect(account_json[:name]).to eq(new_name)
-        end
-      end
-
-      context 'when params are invalid' do
-        it 'returns a 406 Not Acceptable and doesn\'t create an account' do
-          put '/accounts/123', name: ''
-          expect(last_response.status).to eq(406)
-          expect(last_response.body).to be_empty
-
-          get '/accounts/123'
-          expect(last_response.status).not_to eq(200)
-          expect(last_response.status).to eq(404)
-          expect(last_response.body).to be_empty
-        end
+      it 'returns 404' do
+        patch '/accounts/123', name: 'some name'
+        expect(last_response.status).to eq(404)
       end
     end
   end
