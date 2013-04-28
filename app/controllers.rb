@@ -52,7 +52,6 @@ module Scrooge
     end
 
     def filter_params(params, white_list)
-      debugger
       params.reject { |key, value| !include_key?(white_list, key) }
     end
   end
