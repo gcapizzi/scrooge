@@ -35,17 +35,7 @@ module Scrooge
     get('/accounts/:id') { |id| @account_controller.show(id.to_i) }
     patch('/accounts/:id') { |id| @account_controller.update(id.to_i, params) }
     post('/accounts') { @account_controller.create(params) }
-
-    delete '/accounts/:id' do |id|
-      account = Account.get(id.to_i) or halt 404
-
-      if account.destroy!
-        @account_renderer.render_object(account)
-      else
-        status 406
-        # TODO errors?
-      end
-    end
+    delete('/accounts/:id') { |id| @account_controller.destroy(id.to_i) }
 
     get '/accounts/:id/transactions' do |id|
       account = Account.get(id.to_i) or halt 404

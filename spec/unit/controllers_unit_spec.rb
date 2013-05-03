@@ -124,6 +124,53 @@ module Scrooge
       end
     end
 
+    describe '#destroy' do
+      context 'when the objects exists' do
+        context 'when the operation succeeds' do
+          it 'destroys the object' do
+            id = 123
+            json_response = 'Some JSON'
+
+            model_object = mock('model object')
+            model_collection.should_receive(:get).with(id).and_return(model_object)
+            model_object.should_receive(:destroy!).and_return(true)
+            renderer.should_receive(:render_object).with(model_object).and_return(json_response)
+
+            response = controller.destroy(id)
+
+            expect(response).to eq([200, json_response])
+          end
+        end
+
+        context 'when the operation fails' do
+          it 'returns a 406 Not Acceptable and doesn\'t destroy the object' do
+            id = 123
+
+            model_object = mock('model object')
+            model_collection.should_receive(:get).with(id).and_return(model_object)
+            model_object.should_receive(:destroy!).and_return(false)
+            renderer.should_not_receive(:render_object)
+
+            response = controller.destroy(id)
+
+            expect(response).to eq([406, []])
+          end
+        end
+      end
+
+      context 'when the object doesn\'t exist' do
+        it 'returns a 404 Not Found' do
+          id = 123
+
+          model_collection.should_receive(:get).with(id).and_return(nil)
+          renderer.should_not_receive(:render_object)
+
+          response = controller.destroy(id)
+
+          expect(response).to eq([404, []])
+        end
+      end
+    end
   end
 
 end

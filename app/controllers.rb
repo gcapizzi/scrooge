@@ -45,6 +45,19 @@ module Scrooge
       end
     end
 
+    def destroy(id)
+      object = @model_collection.get(id)
+
+      return [404, []] if object.nil?
+
+      if object.destroy!
+        body = @renderer.render_object(object)
+        [200, body]
+      else
+        [406, []]
+      end
+    end
+
     private
 
     def include_key?(list, key)
