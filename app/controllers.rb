@@ -14,6 +14,7 @@ module Scrooge
     def show(id)
       object = @model_collection.get(id)
       return [404, []] if object.nil?
+
       body = @renderer.render_object(object)
       [200, [body]]
     end
@@ -21,7 +22,7 @@ module Scrooge
     def update(id, params)
       object = @model_collection.get(id)
 
-      return [404, []] if not object
+      return [404, []] if object.nil?
 
       params = filter_params(params, [:name])
       if object.update(params)
@@ -46,7 +47,6 @@ module Scrooge
 
     def destroy(id)
       object = @model_collection.get(id)
-
       return [404, []] if object.nil?
 
       if object.destroy!
