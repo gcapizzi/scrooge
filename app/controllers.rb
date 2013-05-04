@@ -7,8 +7,7 @@ module Scrooge
     end
 
     def index
-      collection = @model_collection.all
-      body = @renderer.render_collection(collection)
+      body = @renderer.render_collection(@model_collection)
       [200, [body]]
     end
 
