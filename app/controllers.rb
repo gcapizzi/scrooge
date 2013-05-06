@@ -24,7 +24,7 @@ module Scrooge
 
       return not_found if object.nil?
 
-      params = filter_params(params, [:name])
+      params = filter_params(params)
       if object.update(params)
         body = @renderer.render_object(object)
         ok(body)
@@ -34,7 +34,7 @@ module Scrooge
     end
 
     def create(params)
-      params = filter_params(params, [:name])
+      params = filter_params(params)
       object = @model_collection.create(params)
 
       if object.saved?
@@ -63,7 +63,11 @@ module Scrooge
       list.include?(key.to_s) || list.include?(key.to_sym)
     end
 
-    def filter_params(params, white_list)
+    def model_attributes
+      @model_collection.properties.map(&:name) - [:id]
+    end
+
+    def filter_params(params, white_list = model_attributes)
       params.reject { |key, value| !include_key?(white_list, key) }
     end
 

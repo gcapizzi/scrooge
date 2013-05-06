@@ -9,8 +9,9 @@ module Scrooge
     let(:renderer) { double('renderer', render_object: json_response, render_collection: json_response) }
     let(:model_object) { double('model object', saved?: true) }
     let(:invalid_model_object) { double('invalid model object', saved?: false) }
-    let(:model_collection) { double('model collection', get: model_object) }
-    let(:empty_model_collection) { double('empty model collection', get: nil) }
+    let(:properties) { double('model properties', map: [:id, :name]) }
+    let(:model_collection) { double('model collection', get: model_object, properties: properties) }
+    let(:empty_model_collection) { double('empty model collection', get: nil, properties: properties) }
     let(:controller) { Controller.new(model_collection, renderer) }
     let(:empty_controller) { Controller.new(empty_model_collection, renderer) }
 
