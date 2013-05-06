@@ -8,28 +8,28 @@ module Scrooge
 
     def index
       body = @renderer.render_collection(@model_collection)
-      [200, [body]]
+      ok(body)
     end
 
     def show(id)
       object = @model_collection.get(id)
-      return [404, []] if object.nil?
+      return not_found if object.nil?
 
       body = @renderer.render_object(object)
-      [200, [body]]
+      ok(body)
     end
 
     def update(id, params)
       object = @model_collection.get(id)
 
-      return [404, []] if object.nil?
+      return not_found if object.nil?
 
       params = filter_params(params, [:name])
       if object.update(params)
         body = @renderer.render_object(object)
-        [200, [body]]
+        ok(body)
       else
-        [406, []]
+        not_acceptable
       end
     end
 
@@ -39,21 +39,21 @@ module Scrooge
 
       if object.saved?
         body = @renderer.render_object(object)
-        [201, [body]]
+        created(body)
       else
-        [406, []]
+        not_acceptable
       end
     end
 
     def destroy(id)
       object = @model_collection.get(id)
-      return [404, []] if object.nil?
+      return not_found if object.nil?
 
       if object.destroy!
         body = @renderer.render_object(object)
-        [200, body]
+        ok(body)
       else
-        [406, []]
+        not_acceptable
       end
     end
 
@@ -66,6 +66,15 @@ module Scrooge
     def filter_params(params, white_list)
       params.reject { |key, value| !include_key?(white_list, key) }
     end
+
+    def response(status, body)
+      [status, Array(body)]
+    end
+
+    def ok(body = nil);             response(200, body); end
+    def created(body = nil);        response(201, body); end
+    def not_found(body = nil);      response(404, body); end
+    def not_acceptable(body = nil); response(406, body); end
   end
 
 end

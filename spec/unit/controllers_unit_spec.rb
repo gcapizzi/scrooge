@@ -88,7 +88,7 @@ module Scrooge
           it 'destroys the object' do
             model_object.should_receive(:destroy!).and_return(true)
             response = controller.destroy(123)
-            expect(response).to eq([200, json_response])
+            expect(response).to eq([200, [json_response]])
           end
         end
 
