@@ -12,17 +12,14 @@ module Scrooge
     end
 
     def show(id)
-      object = @model_collection.get(id)
-      return not_found if object.nil?
+      object = @model_collection.get(id) or return not_found
 
       body = @renderer.render_object(object)
       ok(body)
     end
 
     def update(id, params)
-      object = @model_collection.get(id)
-
-      return not_found if object.nil?
+      object = @model_collection.get(id) or return not_found
 
       params = filter_params(params)
       if object.update(params)
@@ -46,8 +43,7 @@ module Scrooge
     end
 
     def destroy(id)
-      object = @model_collection.get(id)
-      return not_found if object.nil?
+      object = @model_collection.get(id) or return not_found
 
       if object.destroy!
         body = @renderer.render_object(object)
