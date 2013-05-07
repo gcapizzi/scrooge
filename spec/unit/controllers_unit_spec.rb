@@ -7,13 +7,12 @@ module Scrooge
   describe Controller do
     let(:json_response) { 'some json' }
     let(:renderer) { double('renderer', render_object: json_response, render_collection: json_response) }
-    let(:model_object) { double('model object', saved?: true) }
-    let(:invalid_model_object) { double('invalid model object', saved?: false) }
-    let(:properties) { double('model properties', map: [:id, :name]) }
-    let(:model_collection) { double('model collection', get: model_object, properties: properties) }
-    let(:empty_model_collection) { double('empty model collection', get: nil, properties: properties) }
-    let(:controller) { Controller.new(model_collection, renderer) }
-    let(:empty_controller) { Controller.new(empty_model_collection, renderer) }
+    let(:model_object) { double('model object') }
+    let(:model_collection) { double('model collection') }
+    let(:repository) { double('repository', all: model_collection, get: model_object, attributes: [:name]) }
+    let(:empty_repository) { double('empty repository', get: nil) }
+    let(:controller) { Controller.new(repository, renderer) }
+    let(:empty_controller) { Controller.new(empty_repository, renderer) }
 
     describe '#index' do
       it 'returns all objects' do
@@ -40,8 +39,11 @@ module Scrooge
         context 'when params are valid' do
           it 'updates the account' do
             new_name = 'new account name'
-            model_object.should_receive(:update).with(name: new_name).and_return(true)
+            model_object.should_receive(:name=).with(new_name)
+            repository.should_receive(:update).with(model_object).and_return(true)
+
             response = controller.update(123, name: new_name)
+
             expect(response).to eq([200, [json_response]])
           end
         end
@@ -49,8 +51,11 @@ module Scrooge
         context 'when params are invalid' do
           it 'returns a 406 Not Acceptable and doesn\'t update the account' do
             name = 'an invalid name'
-            model_object.should_receive(:update).with(name: name).and_return(false)
+            model_object.should_receive(:name=).with(name)
+            repository.should_receive(:update).with(model_object).and_return(false)
+
             response = controller.update(123, name: name)
+
             expect(response).to eq([406, []])
           end
         end
@@ -67,8 +72,10 @@ module Scrooge
       context 'when params are valid' do
         it 'creates a new object' do
           name = 'a name'
-          model_collection.should_receive(:create).with(name: name).and_return(model_object)
+          repository.should_receive(:create).with(name: name).and_return(model_object)
+
           response = controller.create(name: name)
+
           expect(response).to eq([201, [json_response]])
         end
       end
@@ -76,8 +83,10 @@ module Scrooge
       context 'when params are invalid' do
         it 'returns a 406 Not Acceptable and doesn\'t create an account' do
           name = 'an invalid name'
-          model_collection.should_receive(:create).with(name: name).and_return(invalid_model_object)
+          repository.should_receive(:create).with(name: name).and_return(nil)
+
           response = controller.create(name: name)
+
           expect(response).to eq([406, []])
         end
       end

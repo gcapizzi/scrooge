@@ -26,7 +26,8 @@ module Scrooge
     before do
       @account_renderer = AccountJsonRenderer.new('app/views')
       @transaction_renderer = TransactionJsonRenderer.new('app/views')
-      @account_controller = Controller.new(Account, @account_renderer)
+      @account_repository = DataMapperRepository.new(Account)
+      @account_controller = Controller.new(@account_repository, @account_renderer)
     end
 
     get('/') { send_file File.join(settings.public_folder, 'index.html') }

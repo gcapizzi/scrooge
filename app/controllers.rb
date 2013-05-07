@@ -1,28 +1,27 @@
 module Scrooge
 
   class Controller
-    def initialize(model_collection, renderer)
-      @model_collection = model_collection
+    def initialize(repository, renderer)
+      @repository = repository
       @renderer = renderer
     end
 
     def index
-      body = @renderer.render_collection(@model_collection)
+      body = @renderer.render_collection(@repository.all)
       ok(body)
     end
 
     def show(id)
-      object = @model_collection.get(id) or return not_found
-
+      object = @repository.get(id) or return not_found
       body = @renderer.render_object(object)
       ok(body)
     end
 
     def update(id, params)
-      object = @model_collection.get(id) or return not_found
+      object = @repository.get(id) or return not_found
 
-      params = filter_params(params)
-      if object.update(params)
+      set_attributes!(object, filter_params(params))
+      if @repository.update(object)
         body = @renderer.render_object(object)
         ok(body)
       else
@@ -32,9 +31,9 @@ module Scrooge
 
     def create(params)
       params = filter_params(params)
-      object = @model_collection.create(params)
+      object = @repository.create(params)
 
-      if object.saved?
+      if object
         body = @renderer.render_object(object)
         created(body)
       else
@@ -43,7 +42,7 @@ module Scrooge
     end
 
     def destroy(id)
-      object = @model_collection.get(id) or return not_found
+      object = @repository.get(id) or return not_found
 
       if object.destroy!
         body = @renderer.render_object(object)
@@ -59,12 +58,14 @@ module Scrooge
       list.include?(key.to_s) || list.include?(key.to_sym)
     end
 
-    def model_attributes
-      @model_collection.properties.map(&:name) - [:id]
+    def filter_params(params, white_list = @repository.attributes)
+      params.reject { |key, value| !include_key?(white_list, key) }
     end
 
-    def filter_params(params, white_list = model_attributes)
-      params.reject { |key, value| !include_key?(white_list, key) }
+    def set_attributes!(object, attributes)
+      attributes.each do |attribute, value|
+        object.send("#{attribute}=", value)
+      end
     end
 
     def response(status, body)
