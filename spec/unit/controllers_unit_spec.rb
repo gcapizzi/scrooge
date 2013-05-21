@@ -96,7 +96,7 @@ module Scrooge
       context 'when the objects exists' do
         context 'when the operation succeeds' do
           it 'destroys the object' do
-            model_object.should_receive(:destroy!).and_return(true)
+            repository.should_receive(:destroy).with(model_object).and_return(true)
             response = controller.destroy(123)
             expect(response).to eq([200, [json_response]])
           end
@@ -104,7 +104,7 @@ module Scrooge
 
         context 'when the operation fails' do
           it 'returns a 406 Not Acceptable and doesn\'t destroy the object' do
-            model_object.should_receive(:destroy!).and_return(false)
+            repository.should_receive(:destroy).with(model_object).and_return(false)
             response = controller.destroy(123)
             expect(response).to eq([406, []])
           end

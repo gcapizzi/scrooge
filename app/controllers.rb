@@ -44,7 +44,7 @@ module Scrooge
     def destroy(id)
       object = @repository.get(id) or return not_found
 
-      if object.destroy!
+      if @repository.destroy(object)
         body = @renderer.render_object(object)
         ok(body)
       else
