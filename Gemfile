@@ -2,6 +2,8 @@ source 'https://rubygems.org'
 
 gem 'data_mapper'
 gem 'do_sqlite3'
+gem 'sequel'
+gem 'sqlite3'
 gem 'sinatra'
 gem 'sinatra-contrib'
 gem 'sprockets', '~> 2.0'

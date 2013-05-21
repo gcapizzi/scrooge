@@ -14,13 +14,11 @@ module Scrooge
     set :public_folder, "#{Dir.pwd}/public"
 
     configure :development do
-      DataMapper.setup(:default, "sqlite://#{Dir.pwd}/db/scrooge.db")
       register Sinatra::Reloader
     end
 
     configure :test do
       enable :logging, :dump_errors, :raise_errors
-      DataMapper.setup(:default, 'sqlite::memory:')
     end
 
     before do

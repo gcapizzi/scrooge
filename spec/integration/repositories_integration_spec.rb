@@ -1,17 +1,19 @@
 require 'spec_helper'
 require 'spec_fixtures'
 
+require './app/models'
 require './app/repositories'
-
-DataMapper.setup(:default, 'sqlite3::memory:')
 
 module Scrooge
 
-  shared_examples 'a repository' do
-    let(:accounts) { (1..3).map { Account.gen(:valid) } }
-    let(:account) { accounts.first }
+  DataMapper.auto_migrate!
 
-    before { DataMapper.auto_migrate! }
+  Sequel.extension :migration
+  Sequel::Migrator.run(DB, 'db/migrations')
+  SequelAccount.dataset = SequelAccount.dataset # refresh dataset
+
+  shared_examples 'a repository' do
+    let(:account) { @accounts.first }
 
     describe '#get' do
       context 'when the object exists' do
@@ -29,7 +31,7 @@ module Scrooge
 
     describe '#all' do
       it 'returns all objects in the collection' do
-        expect(subject.all).to eq(accounts)
+        expect(subject.all).to eq(@accounts)
       end
     end
 
@@ -47,7 +49,7 @@ module Scrooge
         it 'returns nil and doesn\'t create a record' do
           object = subject.create(name: '')
           expect(object).to be_nil
-          expect(subject.all.count).to eq(0)
+          expect(subject.all.count).to eq(3)
         end
       end
     end
@@ -65,11 +67,10 @@ module Scrooge
 
       context 'when params are invalid' do
         it 'returns false and doesn\'t update the object' do
-          old_account = account.dup
           account.name = ''
           updated = subject.update(account)
           expect(updated).to be_false
-          expect(subject.get(account.id)).to eq(old_account)
+          expect(subject.get(account.id).name).not_to be_empty
         end
       end
     end
@@ -91,7 +92,22 @@ module Scrooge
   end
 
   describe DataMapperRepository do
+    before(:each) do
+      Account.destroy!
+      @accounts = (1..3).map { |i| Account.create(name: "account #{i}") }
+    end
+
     subject { DataMapperRepository.new(Account) }
+    it_behaves_like 'a repository'
+  end
+
+  describe SequelRepository do
+    before(:each) do
+      SequelAccount.destroy
+      @accounts = (1..3).map { |i| SequelAccount.create(name: "account #{i}") }
+    end
+
+    subject { SequelRepository.new(SequelAccount) }
     it_behaves_like 'a repository'
   end
 
