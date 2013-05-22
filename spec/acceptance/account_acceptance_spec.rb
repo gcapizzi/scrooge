@@ -14,8 +14,11 @@ describe Scrooge::App do
     Scrooge::Account.destroy
     @accounts = (1..3).map do |i|
       account = Scrooge::Account.create(name: "account #{i}")
-      3.times { |j| account.add_transaction(Scrooge::Transaction.create(description: "transaction #{j}",
-                                                                        amount: BigDecimal.new('12.34'))) }
+      3.times do |j|
+        transaction_hash = { description: "transaction #{j}",
+                             amount: BigDecimal.new('12.34') }
+        account.add_transaction(Scrooge::Transaction.create(transaction_hash))
+      end
       account.save
       account
     end
