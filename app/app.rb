@@ -24,7 +24,7 @@ module Scrooge
     before do
       @account_renderer = AccountJsonRenderer.new('app/views')
       @transaction_renderer = TransactionJsonRenderer.new('app/views')
-      @account_repository = DataMapperRepository.new(Account)
+      @account_repository = SequelRepository.new(Account)
       @account_controller = Controller.new(@account_repository, @account_renderer)
     end
 
@@ -37,7 +37,7 @@ module Scrooge
     delete('/accounts/:id') { |id| @account_controller.destroy(id.to_i) }
 
     get '/accounts/:id/transactions' do |id|
-      account = Account.get(id.to_i) or halt 404
+      account = Account[id.to_i] or halt 404
       transactions = account.transactions
       @transaction_renderer.render_collection(transactions)
     end

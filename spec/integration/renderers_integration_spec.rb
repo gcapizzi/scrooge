@@ -1,17 +1,13 @@
 require 'spec_helper'
-require 'spec_fixtures'
 
 require './app/models'
 require './app/renderers'
-
-DataMapper.setup(:default, 'sqlite3::memory:')
-DataMapper.auto_migrate!
 
 module Scrooge
 
   describe AccountJsonRenderer do
     let(:renderer) { AccountJsonRenderer.new('app/views') }
-    let(:account) { Account.gen(:valid) }
+    let(:account) { Fabricate(:account) }
     let(:accounts) { [account] }
 
     it 'serializes an account to JSON' do
@@ -38,7 +34,7 @@ module Scrooge
 
   describe TransactionJsonRenderer do
     let(:renderer) { TransactionJsonRenderer.new('app/views') }
-    let(:account) { Account.gen(:valid) }
+    let(:account) { Fabricate(:account) }
     let(:transactions) { account.transactions }
     let(:transaction) { transactions.first }
 

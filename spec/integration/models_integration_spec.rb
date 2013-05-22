@@ -1,23 +1,18 @@
 require 'spec_helper'
-require 'spec_fixtures'
 
 require './app/models'
-
-DataMapper.setup(:default, 'sqlite3::memory:')
-DataMapper.auto_migrate!
 
 module Scrooge
 
   describe Account do
     it "doesn't allow an empty name" do
-      account = Account.make(:invalid)
+      account = Fabricate(:account, name: '')
       expect(account).not_to be_valid
     end
 
     it 'is wired correctly' do
-      account = Account.gen(:valid)
-      account.transactions.save
-      account_on_db = Account.get(account.id)
+      account = Fabricate(:account)
+      account_on_db = Account[account.id]
       expect(account_on_db).to eq(account)
       expect(account_on_db.transactions.count).to eq(3)
     end
@@ -25,13 +20,13 @@ module Scrooge
 
   describe Transaction do
     it 'is wired correctly' do
-      description = "test transaction"
-      amount = BigDecimal.new("12.34")
-      transaction = Transaction.make(description: description, amount: amount)
-      account = Account.gen(:valid)
+      description = 'test transaction'
+      amount = BigDecimal.new('12.34')
+      transaction = Fabricate.build(:transaction, description: description, amount: amount)
+      account = Fabricate(:account)
       transaction.account = account
       transaction.save
-      transaction_on_db = Transaction.get(transaction.id)
+      transaction_on_db = Transaction[transaction.id]
       expect(transaction_on_db.description).to eq(description)
       expect(transaction_on_db.amount).to eq(amount)
       expect(transaction_on_db.account).to eq(account)

@@ -1,7 +1,5 @@
 source 'https://rubygems.org'
 
-gem 'data_mapper'
-gem 'do_sqlite3'
 gem 'sequel'
 gem 'sqlite3'
 gem 'sinatra'
@@ -16,7 +14,6 @@ group :test, :development do
   gem 'rspec'
   gem 'rack', require: 'rack/test'
   gem 'simplecov'
-  gem 'dm-sqlite-adapter'
-  gem 'dm-sweatshop'
   gem 'debugger'
+  gem 'fabrication'
 end

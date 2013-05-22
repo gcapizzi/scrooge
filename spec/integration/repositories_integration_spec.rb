@@ -1,16 +1,9 @@
 require 'spec_helper'
-require 'spec_fixtures'
 
 require './app/models'
 require './app/repositories'
 
 module Scrooge
-
-  DataMapper.auto_migrate!
-
-  Sequel.extension :migration
-  Sequel::Migrator.run(DB, 'db/migrations')
-  SequelAccount.dataset = SequelAccount.dataset # refresh dataset
 
   shared_examples 'a repository' do
     let(:account) { @accounts.first }
@@ -91,23 +84,13 @@ module Scrooge
     end
   end
 
-  describe DataMapperRepository do
+  describe SequelRepository do
     before(:each) do
-      Account.destroy!
+      Account.destroy
       @accounts = (1..3).map { |i| Account.create(name: "account #{i}") }
     end
 
-    subject { DataMapperRepository.new(Account) }
-    it_behaves_like 'a repository'
-  end
-
-  describe SequelRepository do
-    before(:each) do
-      SequelAccount.destroy
-      @accounts = (1..3).map { |i| SequelAccount.create(name: "account #{i}") }
-    end
-
-    subject { SequelRepository.new(SequelAccount) }
+    subject { SequelRepository.new(Account) }
     it_behaves_like 'a repository'
   end
 

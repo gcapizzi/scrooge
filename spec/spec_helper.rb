@@ -8,6 +8,10 @@ ENV['RACK_ENV'] = 'test'
 require 'simplecov'
 SimpleCov.start
 
+# Fabrication
+
+require 'fabrication'
+
 # Helper functions
 
 require 'json'

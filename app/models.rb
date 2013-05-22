@@ -1,43 +1,23 @@
 require 'rubygems'
 require 'bundler/setup'
 
-require 'data_mapper'
 require 'sequel'
 
 case ENV['RACK_ENV']
 when 'test'
   DB = Sequel.sqlite
-  DataMapper.setup(:default, 'sqlite::memory:')
+  Sequel.extension :migration
+  Sequel::Migrator.run(DB, 'db/migrations')
 when 'development'
   DB = Sequel.sqlite('db/scrooge.db')
-  DataMapper.setup(:default, "sqlite://#{Dir.pwd}/db/scrooge.db")
 end
 
 module Scrooge
 
-  class Account
-    include DataMapper::Resource
-
-    property :id,   Serial
-    property :name, String, required: true
-
-    has n, :transactions
-  end
-
-  class Transaction
-    include DataMapper::Resource
-
-    property :id,          Serial
-    property :description, String
-    property :amount,      Decimal, scale: 2
-
-    belongs_to :account
-  end
-
-  DataMapper.finalize
-
-  class SequelAccount < Sequel::Model
+  class Account < Sequel::Model
     set_dataset :accounts
+
+    one_to_many :transactions
 
     self.raise_on_save_failure = false
 
@@ -46,4 +26,13 @@ module Scrooge
       errors.add(:name, "can't be empty") if name.empty?
     end
   end
+
+  class Transaction < Sequel::Model
+    set_dataset :transactions
+
+    many_to_one :account
+
+    self.raise_on_save_failure = false
+  end
+
 end

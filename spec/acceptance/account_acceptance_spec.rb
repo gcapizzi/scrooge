@@ -1,19 +1,24 @@
 require 'spec_helper'
-require 'spec_fixtures'
 
 require 'rack/test'
 
 require './app/models'
 require './app/app'
 
-describe Scrooge do
+describe Scrooge::App do
   include Rack::Test::Methods
 
   let(:app) { Scrooge::App }
 
   before do
-    DataMapper.auto_migrate!
-    @accounts = (1..3).map { Scrooge::Account.gen(:valid) }
+    Scrooge::Account.destroy
+    @accounts = (1..3).map do |i|
+      account = Scrooge::Account.create(name: "account #{i}")
+      3.times { |j| account.add_transaction(Scrooge::Transaction.create(description: "transaction #{j}",
+                                                                        amount: BigDecimal.new('12.34'))) }
+      account.save
+      account
+    end
     @account = @accounts.first
   end
 
