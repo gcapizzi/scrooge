@@ -39,7 +39,7 @@ describe Scrooge::App do
       it 'returns the specified account' do
         get "/accounts/#{@account.id}"
         expect(last_response.status).to eq(200)
-        expect(parse_json(last_response.body)[:account]).not_to be_nil
+        expect(parse_json(last_response.body)[:accounts]).not_to be_nil
       end
     end
 
@@ -62,7 +62,7 @@ describe Scrooge::App do
           expect(last_response.status).to eq(200)
 
           get "/accounts/#{@account.id}"
-          account_json = parse_json(last_response.body)[:account]
+          account_json = parse_json(last_response.body)[:accounts][0]
           expect(account_json[:name]).to eq(new_name)
         end
       end
@@ -75,7 +75,7 @@ describe Scrooge::App do
 
           get "/accounts/#{@account.id}"
           expect(last_response.status).to eq(200)
-          account_json = parse_json(last_response.body)[:account]
+          account_json = parse_json(last_response.body)[:accounts][0]
           expect(account_json[:name]).not_to be_empty
         end
       end
@@ -94,7 +94,7 @@ describe Scrooge::App do
       it 'creates a new account' do
         post '/accounts', name: 'new account name'
         expect(last_response.status).to eq(201)
-        account_json = parse_json(last_response.body)[:account]
+        account_json = parse_json(last_response.body)[:accounts][0]
         expect(account_json[:name]).to eq('new account name')
 
         get '/accounts'
@@ -124,7 +124,7 @@ describe Scrooge::App do
         delete "/accounts/#{@account.id}"
         expect(last_response.status).to eq(200)
 
-        account_json = parse_json(last_response.body)[:account]
+        account_json = parse_json(last_response.body)[:accounts][0]
         expect(account_json[:id]).to eq(@account.id)
         expect(account_json[:name]).to eq(@account.name)
 

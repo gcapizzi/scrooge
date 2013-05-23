@@ -1,36 +1,21 @@
 require 'rabl'
 
+Rabl.configure do |config|
+  config.include_json_root = false
+  config.include_child_root = false
+end
+
 module Scrooge
 
   class JsonRenderer
-    def initialize(view_path)
+    def initialize(template, view_path)
+      @template = template
       @view_path = view_path
     end
 
-    private
-
-    def render(object, template)
-      Rabl.render(object, template, view_path: @view_path)
+    def render(object_or_collection)
+      Rabl.render(Array(object_or_collection), @template, view_path: @view_path)
     end
   end
 
-  class AccountJsonRenderer < JsonRenderer
-    def render_object(account)
-      render(account, 'account')
-    end
-
-    def render_collection(accounts)
-      render(accounts, 'accounts')
-    end
-  end
-
-  class TransactionJsonRenderer < JsonRenderer
-    def render_object(transaction)
-      render(transaction, 'transaction')
-    end
-
-    def render_collection(transactions)
-      render(transactions, 'transactions')
-    end
-  end
 end

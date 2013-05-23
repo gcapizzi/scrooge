@@ -6,7 +6,7 @@ module Scrooge
 
   describe Controller do
     let(:json_response) { 'some json' }
-    let(:renderer) { double('renderer', render_object: json_response, render_collection: json_response) }
+    let(:renderer) { double('renderer', render: json_response) }
     let(:model_object) { double('model object') }
     let(:model_collection) { double('model collection') }
     let(:repository) { double('repository', all: model_collection, get: model_object, attributes: [:name]) }

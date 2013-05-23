@@ -7,13 +7,13 @@ module Scrooge
     end
 
     def index
-      body = @renderer.render_collection(@repository.all)
+      body = @renderer.render(@repository.all)
       ok(body)
     end
 
     def show(id)
       object = @repository.get(id) or return not_found
-      body = @renderer.render_object(object)
+      body = @renderer.render(object)
       ok(body)
     end
 
@@ -22,7 +22,7 @@ module Scrooge
 
       set_attributes!(object, filter_params(params))
       if @repository.update(object)
-        body = @renderer.render_object(object)
+        body = @renderer.render(object)
         ok(body)
       else
         not_acceptable
@@ -34,7 +34,7 @@ module Scrooge
       object = @repository.create(params)
 
       if object
-        body = @renderer.render_object(object)
+        body = @renderer.render(object)
         created(body)
       else
         not_acceptable
@@ -45,7 +45,7 @@ module Scrooge
       object = @repository.get(id) or return not_found
 
       if @repository.destroy(object)
-        body = @renderer.render_object(object)
+        body = @renderer.render(object)
         ok(body)
       else
         not_acceptable
