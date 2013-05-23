@@ -5,6 +5,7 @@ require 'sinatra/base'
 require 'sinatra/reloader'
 
 require './app/models'
+require './app/repositories'
 require './app/controllers'
 require './app/renderers'
 
