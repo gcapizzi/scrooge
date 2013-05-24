@@ -45,10 +45,13 @@ module Scrooge
           {
             id: transaction.id,
             description: transaction.description,
-            amount: transaction.amount.to_s('F')
+            amount: transaction.amount.to_s('F'),
+            links: {
+              account: transaction.account.id
+            }
           }
         end
-      }
+      }.to_json
     end
   end
 end

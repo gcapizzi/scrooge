@@ -32,7 +32,6 @@ module Scrooge
   end
 
   shared_examples 'a transactions json renderer' do
-    let(:renderer) { RablJsonRenderer.new('transactions', 'app/views') }
     let(:account) { Fabricate(:account) }
     let(:transactions) { account.transactions }
     let(:transaction) { transactions.first }
@@ -57,7 +56,7 @@ module Scrooge
       expect(attributes[:id]).to eq(transaction.id)
       expect(attributes[:description]).to eq(transaction.description)
       expect(attributes[:amount]).to eq(transaction.amount.to_s('F'))
-      expect(attributes[:account_id]).to eq(transaction.account.id)
+      expect(attributes[:links][:account]).to eq(transaction.account.id)
     end
   end
 
