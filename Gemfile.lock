@@ -1,9 +1,6 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (3.2.13)
-      i18n (= 0.6.1)
-      multi_json (~> 1.0)
     backports (3.3.1)
     columnize (0.3.6)
     debugger (1.6.0)
@@ -17,11 +14,7 @@ GEM
     eventmachine (1.0.3-java)
     fabrication (2.7.1)
     hike (1.2.2)
-    i18n (0.6.1)
     multi_json (1.7.3)
-    oj (2.0.13)
-    rabl (0.8.4)
-      activesupport (>= 2.3.14)
     rack (1.5.2)
     rack-protection (1.5.0)
       rack
@@ -69,8 +62,6 @@ PLATFORMS
 DEPENDENCIES
   debugger
   fabrication
-  oj
-  rabl
   rack
   rspec
   sass
