@@ -7,7 +7,7 @@ end
 
 module Scrooge
 
-  class JsonRenderer
+  class RablJsonRenderer
     def initialize(template, view_path)
       @template = template
       @view_path = view_path

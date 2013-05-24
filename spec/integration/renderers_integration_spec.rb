@@ -5,9 +5,9 @@ require './app/renderers'
 
 module Scrooge
 
-  describe JsonRenderer do
+  describe RablJsonRenderer do
     context 'with accounts' do
-      let(:renderer) { JsonRenderer.new('accounts', 'app/views') }
+      let(:renderer) { RablJsonRenderer.new('accounts', 'app/views') }
       let(:account) { Fabricate(:account) }
       let(:accounts) { [account] }
 
@@ -34,7 +34,7 @@ module Scrooge
     end
 
     context 'with transactions' do
-      let(:renderer) { JsonRenderer.new('transactions', 'app/views') }
+      let(:renderer) { RablJsonRenderer.new('transactions', 'app/views') }
       let(:account) { Fabricate(:account) }
       let(:transactions) { account.transactions }
       let(:transaction) { transactions.first }

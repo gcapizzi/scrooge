@@ -23,8 +23,8 @@ module Scrooge
     end
 
     before do
-      @account_renderer = JsonRenderer.new('accounts', 'app/views')
-      @transaction_renderer = JsonRenderer.new('transactions', 'app/views')
+      @account_renderer = RablJsonRenderer.new('accounts', 'app/views')
+      @transaction_renderer = RablJsonRenderer.new('transactions', 'app/views')
       @account_repository = SequelRepository.new(Account)
       @account_controller = Controller.new(@account_repository, @account_renderer)
     end
