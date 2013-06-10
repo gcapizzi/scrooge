@@ -11,6 +11,11 @@ module Scrooge
     let(:account) { double('account') }
     let(:account_json) { 'account json' }
     let(:accounts_json) { 'accounts json' }
+    let(:account_response) { [200, [account_json]] }
+    let(:account_created_response) { [201, [account_json]] }
+    let(:accounts_response) { [200, [accounts_json]] }
+    let(:not_found_response) { [404, []] }
+    let(:not_acceptable_response) { [406, []] }
 
     before do
       accounts_repository.stub(:all).and_return(accounts)
@@ -22,24 +27,21 @@ module Scrooge
 
     describe Actions::ListAccounts do
       let(:list_accounts) { Actions::ListAccounts.new(accounts_repository, accounts_renderer) }
-      let(:response) { [200, [accounts_json]] }
 
       it 'lists all accounts' do
-        expect(list_accounts.call).to eq(response)
+        expect(list_accounts.call).to eq(accounts_response)
       end
     end
 
     describe Actions::ShowAccount do
       let(:show_account) { Actions::ShowAccount.new(accounts_repository, accounts_renderer) }
-      let(:response) { [200, [account_json]] }
-      let(:not_found) { [404, []] }
 
       it 'shows a single account' do
-        expect(show_account.call(account_id)).to eq(response)
+        expect(show_account.call(account_id)).to eq(account_response)
       end
 
       it 'returns a 404 if the accounts doesn\'t exist' do
-        expect(show_account.call(wrong_account_id)).to eq(not_found)
+        expect(show_account.call(wrong_account_id)).to eq(not_found_response)
       end
     end
 
@@ -48,60 +50,51 @@ module Scrooge
 
       context 'when the account exists' do
         context 'when params are valid' do
-          let(:response) { [200, [account_json]] }
-
           it 'updates the account' do
             new_name = 'new account name'
             account.should_receive(:name=).with(new_name)
             accounts_repository.should_receive(:update).with(account).and_return(true)
 
-            expect(update_account.call(account_id, name: new_name)).to eq(response)
+            expect(update_account.call(account_id, name: new_name)).to eq(account_response)
           end
         end
 
         context 'when params are invalid' do
-          let(:response) { [406, []] }
-
           it 'returns a 406 Not Acceptable and doesn\'t update the account' do
             name = 'an invalid name'
             account.should_receive(:name=).with(name)
             accounts_repository.should_receive(:update).with(account).and_return(false)
 
-            expect(update_account.call(account_id, name: name)).to eq(response)
+            expect(update_account.call(account_id, name: name)).to eq(not_acceptable_response)
           end
         end
       end
 
       context 'when the account doesn\'t exist' do
-        let(:response) { [404, []] }
-
         it 'returns a 404 Not Found' do
-          expect(update_account.call(wrong_account_id, name: 'anything')).to eq(response)
+          expect(update_account.call(wrong_account_id, name: 'anything')).to eq(not_found_response)
         end
       end
     end
 
     describe Actions::CreateAccount do
       let(:create_account) { Actions::CreateAccount.new(accounts_repository, accounts_renderer) }
-      let(:response) { [201, [account_json]] }
 
       context 'when params are valid' do
         it 'creates a new account' do
           name = 'a name'
           accounts_repository.should_receive(:create).with(name: name).and_return(account)
 
-          expect(create_account.call(name: name)).to eq(response)
+          expect(create_account.call(name: name)).to eq(account_created_response)
         end
       end
 
       context 'when params are invalid' do
-        let(:response) { [406, []] }
-
         it 'returns a 406 Not Acceptable and doesn\'t create an account' do
           name = 'an invalid name'
           accounts_repository.should_receive(:create).with(name: name).and_return(nil)
 
-          expect(create_account.call(name: name)).to eq(response)
+          expect(create_account.call(name: name)).to eq(not_acceptable_response)
         end
       end
     end
@@ -111,31 +104,25 @@ module Scrooge
 
       context 'when the objects exists' do
         context 'when the operation succeeds' do
-          let(:response) { [200, [account_json]] }
-
           it 'destroys the object' do
             accounts_repository.should_receive(:destroy).with(account).and_return(true)
 
-            expect(delete_account.call(account_id)).to eq(response)
+            expect(delete_account.call(account_id)).to eq(account_response)
           end
         end
 
         context 'when the operation fails' do
-          let(:response) { [406, []] }
-
           it 'returns a 406 Not Acceptable and doesn\'t destroy the object' do
             accounts_repository.should_receive(:destroy).with(account).and_return(false)
 
-            expect(delete_account.call(account_id)).to eq(response)
+            expect(delete_account.call(account_id)).to eq(not_acceptable_response)
           end
         end
       end
 
       context 'when the object doesn\'t exist' do
-        let(:response) { [404, []] }
-
         it 'returns a 404 Not Found' do
-          expect(delete_account.call(wrong_account_id)).to eq(response)
+          expect(delete_account.call(wrong_account_id)).to eq(not_found_response)
         end
       end
     end
