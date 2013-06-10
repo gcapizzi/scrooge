@@ -32,10 +32,10 @@ module Scrooge
     get('/') { send_file File.join(settings.public_folder, 'index.html') }
 
     get('/accounts') { @account_controller.index }
-    get('/accounts/:id') { |id| @account_controller.show(id.to_i) }
-    patch('/accounts/:id') { |id| @account_controller.update(id.to_i, params) }
+    get('/accounts/:account_id') { |account_id| @account_controller.show(account_id.to_i) }
+    patch('/accounts/:account_id') { |account_id| @account_controller.update(account_id.to_i, params) }
     post('/accounts') { @account_controller.create(params) }
-    delete('/accounts/:id') { |id| @account_controller.destroy(id.to_i) }
+    delete('/accounts/:account_id') { |account_id| @account_controller.destroy(account_id.to_i) }
 
     get '/accounts/:id/transactions' do |id|
       account = Account[id.to_i] or halt 404
