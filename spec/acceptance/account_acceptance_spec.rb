@@ -145,17 +145,4 @@ describe Scrooge::App do
       end
     end
   end
-
-  describe 'GET /accounts/:id/transactions' do
-    context 'when the account exists' do
-      it 'lists account transactions' do
-        get "/accounts/#{@account.id}/transactions"
-        expect(last_response.status).to eq(200)
-        transactions_json = parse_json(last_response.body)[:transactions]
-        expect(transactions_json.count).to eq(3)
-      end
-    end
-
-    context 'when the account doesn\'t exist'
-  end
 end

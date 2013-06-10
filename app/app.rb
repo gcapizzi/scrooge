@@ -24,7 +24,6 @@ module Scrooge
 
     before do
       @account_renderer = HashAccountsJsonRenderer.new
-      @transaction_renderer = HashTransactionsJsonRenderer.new
       @account_repository = SequelRepository.new(Account)
       @account_controller = Controller.new(@account_repository, @account_renderer)
     end
@@ -36,12 +35,6 @@ module Scrooge
     patch('/accounts/:account_id') { |account_id| @account_controller.update(account_id.to_i, params) }
     post('/accounts') { @account_controller.create(params) }
     delete('/accounts/:account_id') { |account_id| @account_controller.destroy(account_id.to_i) }
-
-    get '/accounts/:id/transactions' do |id|
-      account = Account[id.to_i] or halt 404
-      transactions = account.transactions
-      @transaction_renderer.render(transactions)
-    end
   end
 
 end
