@@ -7,7 +7,7 @@ module Scrooge::Actions
       list.include?(key.to_s) || list.include?(key.to_sym)
     end
 
-    def filter_params(params, white_list = @repository.attributes)
+    def filter_params(params, white_list = repository.attributes)
       params.reject { |key, value| !include_key?(white_list, key) }
     end
 
@@ -44,15 +44,15 @@ module Scrooge::Actions
 
   class ListAccounts < Action
     def call
-      body = @renderer.render(@repository.all)
+      body = renderer.render(repository.all)
       ok(body)
     end
   end
 
   class ShowAccount < Action
     def call(id)
-      account = @repository.get(id.to_i) or return not_found
-      body = @renderer.render(account)
+      account = repository.get(id.to_i) or return not_found
+      body = renderer.render(account)
       ok(body)
     end
   end
@@ -61,11 +61,11 @@ module Scrooge::Actions
     include ParamsMethods
 
     def call(id, params)
-      account = @repository.get(id.to_i) or return not_found
+      account = repository.get(id.to_i) or return not_found
 
       set_attributes!(account, filter_params(params))
-      if @repository.update(account)
-        body = @renderer.render(account)
+      if repository.update(account)
+        body = renderer.render(account)
         ok(body)
       else
         not_acceptable
@@ -78,10 +78,10 @@ module Scrooge::Actions
 
     def call(params)
       params = filter_params(params)
-      account = @repository.create(params)
+      account = repository.create(params)
 
       if account
-        body = @renderer.render(account)
+        body = renderer.render(account)
         created(body)
       else
         not_acceptable
@@ -91,10 +91,10 @@ module Scrooge::Actions
 
   class DeleteAccount < Action
     def call(id)
-      account = @repository.get(id.to_i) or return not_found
+      account = repository.get(id.to_i) or return not_found
 
-      if @repository.destroy(account)
-        body = @renderer.render(account)
+      if repository.destroy(account)
+        body = renderer.render(account)
         ok(body)
       else
         not_acceptable
