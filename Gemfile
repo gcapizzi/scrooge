@@ -7,6 +7,7 @@ gem 'sinatra-contrib'
 gem 'sprockets', '~> 2.0'
 gem 'sass'
 gem 'zurb-foundation'
+gem 'rake'
 
 group :test, :development do
   gem 'rspec'
