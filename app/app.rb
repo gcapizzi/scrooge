@@ -22,7 +22,7 @@ module Scrooge
     end
 
     helpers do
-      def accounts_renderer; HashAccountsJsonRenderer.new; end
+      def accounts_renderer; Renderers::HashAccountsJsonRenderer.new; end
       def accounts_repository; SequelRepository.new(Models::Account); end
 
       def list_accounts; Actions::ListAccounts.new(accounts_repository, accounts_renderer); end
