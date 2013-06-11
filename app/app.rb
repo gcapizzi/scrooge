@@ -21,18 +21,24 @@ module Scrooge
       enable :logging, :dump_errors, :raise_errors
     end
 
-    before do
-      @account_renderer = HashAccountsJsonRenderer.new
-      @account_repository = SequelRepository.new(Account)
+    helpers do
+      def accounts_renderer; HashAccountsJsonRenderer.new; end
+      def accounts_repository; SequelRepository.new(Account); end
+
+      def list_accounts; Actions::ListAccounts.new(accounts_repository, accounts_renderer); end
+      def show_account; Actions::ShowAccount.new(accounts_repository, accounts_renderer); end
+      def update_account; Actions::UpdateAccount.new(accounts_repository, accounts_renderer); end
+      def create_account; Actions::CreateAccount.new(accounts_repository, accounts_renderer); end
+      def delete_account; Actions::DeleteAccount.new(accounts_repository, accounts_renderer); end
     end
 
     get('/') { send_file File.join(settings.public_folder, 'index.html') }
 
-    get('/accounts') { Actions::ListAccounts.new(@account_repository, @account_renderer).call }
-    get('/accounts/:account_id') { |account_id| Actions::ShowAccount.new(@account_repository, @account_renderer).call(account_id) }
-    patch('/accounts/:account_id') { |account_id| Actions::UpdateAccount.new(@account_repository, @account_renderer).call(account_id, params) }
-    post('/accounts') { Actions::CreateAccount.new(@account_repository, @account_renderer).call(params) }
-    delete('/accounts/:account_id') { |account_id| Actions::DeleteAccount.new(@account_repository, @account_renderer).call(account_id) }
+    get('/accounts') { list_accounts.call }
+    get('/accounts/:account_id') { |account_id| show_account.call(account_id) }
+    patch('/accounts/:account_id') { |account_id| update_account.call(account_id, params) }
+    post('/accounts') { create_account.call(params) }
+    delete('/accounts/:account_id') { |account_id| delete_account.call(account_id) }
   end
 
 end

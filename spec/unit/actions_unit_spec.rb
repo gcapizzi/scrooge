@@ -15,7 +15,7 @@ module Scrooge
     let(:account_created_response) { [201, [account_json]] }
     let(:accounts_response) { [200, [accounts_json]] }
     let(:not_found_response) { [404, []] }
-    let(:not_acceptable_response) { [406, []] }
+    let(:bad_request_response) { [400, []] }
 
     before do
       accounts_repository.stub(:all).and_return(accounts)
@@ -60,12 +60,12 @@ module Scrooge
         end
 
         context 'when params are invalid' do
-          it 'returns a 406 Not Acceptable and doesn\'t update the account' do
+          it 'returns a 400 Bad Request and doesn\'t update the account' do
             name = 'an invalid name'
             account.should_receive(:name=).with(name)
             accounts_repository.should_receive(:update).with(account).and_return(false)
 
-            expect(update_account.call(account_id, name: name)).to eq(not_acceptable_response)
+            expect(update_account.call(account_id, name: name)).to eq(bad_request_response)
           end
         end
       end
@@ -90,11 +90,11 @@ module Scrooge
       end
 
       context 'when params are invalid' do
-        it 'returns a 406 Not Acceptable and doesn\'t create an account' do
+        it 'returns a 400 Bad Request and doesn\'t create an account' do
           name = 'an invalid name'
           accounts_repository.should_receive(:create).with(name: name).and_return(nil)
 
-          expect(create_account.call(name: name)).to eq(not_acceptable_response)
+          expect(create_account.call(name: name)).to eq(bad_request_response)
         end
       end
     end
@@ -112,10 +112,10 @@ module Scrooge
         end
 
         context 'when the operation fails' do
-          it 'returns a 406 Not Acceptable and doesn\'t destroy the object' do
+          it 'returns a 400 Bad Request and doesn\'t destroy the object' do
             accounts_repository.should_receive(:destroy).with(account).and_return(false)
 
-            expect(delete_account.call(account_id)).to eq(not_acceptable_response)
+            expect(delete_account.call(account_id)).to eq(bad_request_response)
           end
         end
       end
