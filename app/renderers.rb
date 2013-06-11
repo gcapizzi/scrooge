@@ -10,9 +10,7 @@ module Scrooge
           {
             id: account.id,
             name: account.name,
-            links: {
-            transactions: account.transactions.map(&:id)
-          }
+            links: { transactions: account.transactions.map(&:id) }
           }
           end
         }.to_json
@@ -29,9 +27,7 @@ module Scrooge
             id: transaction.id,
             description: transaction.description,
             amount: transaction.amount.to_s('F'),
-            links: {
-            account: transaction.account.id
-          }
+            links: { account: transaction.account.id }
           }
           end
         }.to_json
