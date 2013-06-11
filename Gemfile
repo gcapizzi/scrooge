@@ -15,4 +15,6 @@ group :test, :development do
   gem 'simplecov'
   gem 'debugger'
   gem 'fabrication'
+  gem 'guard'
+  gem 'guard-rspec'
 end
