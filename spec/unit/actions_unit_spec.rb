@@ -37,11 +37,11 @@ module Scrooge
       let(:show_account) { Actions::ShowAccount.new(accounts_repository, accounts_renderer) }
 
       it 'shows a single account' do
-        expect(show_account.call(account_id)).to eq(account_response)
+        expect(show_account.call(account_id: account_id)).to eq(account_response)
       end
 
       it 'returns a 404 if the accounts doesn\'t exist' do
-        expect(show_account.call(wrong_account_id)).to eq(not_found_response)
+        expect(show_account.call(account_id: wrong_account_id)).to eq(not_found_response)
       end
     end
 
@@ -55,7 +55,7 @@ module Scrooge
             account.should_receive(:name=).with(new_name)
             accounts_repository.should_receive(:update).with(account).and_return(true)
 
-            expect(update_account.call(account_id, name: new_name)).to eq(account_response)
+            expect(update_account.call(account_id: account_id, name: new_name)).to eq(account_response)
           end
         end
 
@@ -65,14 +65,14 @@ module Scrooge
             account.should_receive(:name=).with(name)
             accounts_repository.should_receive(:update).with(account).and_return(false)
 
-            expect(update_account.call(account_id, name: name)).to eq(bad_request_response)
+            expect(update_account.call(account_id: account_id, name: name)).to eq(bad_request_response)
           end
         end
       end
 
       context 'when the account doesn\'t exist' do
         it 'returns a 404 Not Found' do
-          expect(update_account.call(wrong_account_id, name: 'anything')).to eq(not_found_response)
+          expect(update_account.call(account_id: wrong_account_id, name: 'anything')).to eq(not_found_response)
         end
       end
     end
@@ -107,7 +107,7 @@ module Scrooge
           it 'destroys the object' do
             accounts_repository.should_receive(:destroy).with(account).and_return(true)
 
-            expect(delete_account.call(account_id)).to eq(account_response)
+            expect(delete_account.call(account_id: account_id)).to eq(account_response)
           end
         end
 
@@ -115,14 +115,14 @@ module Scrooge
           it 'returns a 400 Bad Request and doesn\'t destroy the object' do
             accounts_repository.should_receive(:destroy).with(account).and_return(false)
 
-            expect(delete_account.call(account_id)).to eq(bad_request_response)
+            expect(delete_account.call(account_id: account_id)).to eq(bad_request_response)
           end
         end
       end
 
       context 'when the object doesn\'t exist' do
         it 'returns a 404 Not Found' do
-          expect(delete_account.call(wrong_account_id)).to eq(not_found_response)
+          expect(delete_account.call(account_id: wrong_account_id)).to eq(not_found_response)
         end
       end
     end

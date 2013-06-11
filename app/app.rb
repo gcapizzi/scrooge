@@ -35,10 +35,10 @@ module Scrooge
     get('/') { send_file File.join(settings.public_folder, 'index.html') }
 
     get('/accounts') { list_accounts.call }
-    get('/accounts/:account_id') { |account_id| show_account.call(account_id) }
-    patch('/accounts/:account_id') { |account_id| update_account.call(account_id, params) }
+    get('/accounts/:account_id') { show_account.call(params) }
+    patch('/accounts/:account_id') { update_account.call(params) }
     post('/accounts') { create_account.call(params) }
-    delete('/accounts/:account_id') { |account_id| delete_account.call(account_id) }
+    delete('/accounts/:account_id') { delete_account.call(params) }
   end
 
 end

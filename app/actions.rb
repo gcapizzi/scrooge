@@ -49,8 +49,9 @@ module Scrooge
     end
 
     class ShowAccount < Action
-      def call(id)
-        account = repository.get(id.to_i) or return not_found
+      def call(params)
+        id = params[:account_id].to_i
+        account = repository.get(id) or return not_found
         body = renderer.render(account)
         ok(body)
       end
@@ -59,8 +60,9 @@ module Scrooge
     class UpdateAccount < Action
       include ParamsMethods
 
-      def call(id, params)
-        account = repository.get(id.to_i) or return not_found
+      def call(params)
+        id = params[:account_id].to_i
+        account = repository.get(id) or return not_found
 
         set_attributes!(account, filter_params(params))
         if repository.update(account)
@@ -89,7 +91,8 @@ module Scrooge
     end
 
     class DeleteAccount < Action
-      def call(id)
+      def call(params)
+        id = params[:account_id].to_i
         account = repository.get(id.to_i) or return not_found
 
         if repository.destroy(account)
