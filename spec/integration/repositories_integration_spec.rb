@@ -86,11 +86,11 @@ module Scrooge
 
   describe SequelRepository do
     before(:each) do
-      Account.destroy
-      @accounts = (1..3).map { |i| Account.create(name: "account #{i}") }
+      Models::Account.destroy
+      @accounts = (1..3).map { |i| Models::Account.create(name: "account #{i}") }
     end
 
-    subject { SequelRepository.new(Account) }
+    subject { SequelRepository.new(Models::Account) }
     it_behaves_like 'a repository'
   end
 

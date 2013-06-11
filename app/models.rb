@@ -13,26 +13,28 @@ when 'development'
 end
 
 module Scrooge
+  module Models
 
-  class Account < Sequel::Model
-    set_dataset :accounts
+    class Account < Sequel::Model
+      set_dataset :accounts
 
-    one_to_many :transactions
+      one_to_many :transactions
 
-    self.raise_on_save_failure = false
+      self.raise_on_save_failure = false
 
-    def validate
-      super
-      errors.add(:name, "can't be empty") if name.empty?
+      def validate
+        super
+        errors.add(:name, "can't be empty") if name.empty?
+      end
     end
+
+    class Transaction < Sequel::Model
+      set_dataset :transactions
+
+      many_to_one :account
+
+      self.raise_on_save_failure = false
+    end
+
   end
-
-  class Transaction < Sequel::Model
-    set_dataset :transactions
-
-    many_to_one :account
-
-    self.raise_on_save_failure = false
-  end
-
 end

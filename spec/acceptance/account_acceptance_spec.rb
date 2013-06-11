@@ -11,13 +11,13 @@ describe Scrooge::App do
   let(:app) { Scrooge::App }
 
   before do
-    Scrooge::Account.destroy
+    Scrooge::Models::Account.destroy
     @accounts = (1..3).map do |i|
-      account = Scrooge::Account.create(name: "account #{i}")
+      account = Scrooge::Models::Account.create(name: "account #{i}")
       3.times do |j|
         transaction_hash = { description: "transaction #{j}",
                              amount: BigDecimal.new('12.34') }
-        account.add_transaction(Scrooge::Transaction.create(transaction_hash))
+        account.add_transaction(Scrooge::Models::Transaction.create(transaction_hash))
       end
       account.save
       account
