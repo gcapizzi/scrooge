@@ -6,7 +6,7 @@ ENV['RACK_ENV'] = 'test'
 # Setup SimpleCov
 
 require 'simplecov'
-SimpleCov.start
+SimpleCov.start if ENV['COVERAGE']
 
 # Fabrication
 
