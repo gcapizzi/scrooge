@@ -85,7 +85,7 @@ module Scrooge
           name = 'a name'
           accounts_repository.should_receive(:create).with(name: name).and_return(account)
 
-          expect(create_account.call(name: name)).to eq(account_created_response)
+          expect(create_account.call(name: name, foo: 'bar')).to eq(account_created_response)
         end
       end
 

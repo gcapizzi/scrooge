@@ -9,7 +9,7 @@ module Scrooge
       end
 
       def filter_params(params, white_list = repository.attributes)
-        params.reject { |key, value| !include_key?(white_list, key) }
+        params.reject { |key| !include_key?(white_list, key) }
       end
 
       def set_attributes!(object, attributes)
@@ -93,7 +93,7 @@ module Scrooge
     class DeleteAccount < Action
       def call(params)
         id = params[:account_id].to_i
-        account = repository.get(id.to_i) or return not_found
+        account = repository.get(id) or return not_found
 
         if repository.destroy(account)
           body = renderer.render(account)

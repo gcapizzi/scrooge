@@ -9,6 +9,7 @@ module Scrooge
       it "doesn't allow an empty name" do
         account = Fabricate(:account, name: '')
         expect(account).not_to be_valid
+        expect(account.errors.on(:name)).to include("can't be empty")
       end
 
       it 'is wired correctly' do
