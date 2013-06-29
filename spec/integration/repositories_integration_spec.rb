@@ -87,7 +87,7 @@ module Scrooge
 
     describe SequelRepository do
       before(:each) do
-        Models::Account.destroy
+        Models::Account.dataset.destroy
         @accounts = (1..3).map { |i| Models::Account.create(name: "account #{i}") }
       end
 

@@ -11,7 +11,7 @@ describe Scrooge::App do
   let(:app) { Scrooge::App }
 
   before do
-    Scrooge::Models::Account.destroy
+    Scrooge::Models::Account.dataset.destroy
     @accounts = (1..3).map { |i| Scrooge::Models::Account.create(name: "account #{i}") }
     @account = @accounts.first
   end
