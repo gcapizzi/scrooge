@@ -1,8 +1,7 @@
 require 'rubygems'
 require 'bundler/setup'
 
-require 'sinatra/base'
-require 'sinatra/reloader'
+require 'rack/mount'
 
 require './app/models'
 require './app/actions'
@@ -10,36 +9,20 @@ require './app/repositories'
 require './app/renderers'
 
 module Scrooge
+  accounts_renderer   = Renderers::HashAccountsJsonRenderer.new
+  accounts_repository = Repositories::SequelRepository.new(Models::Account)
 
-  class App < Sinatra::Base
-    set :public_folder, "#{Dir.pwd}/public"
+  list_accounts  = Actions::ListAccounts.new(accounts_repository, accounts_renderer)
+  show_account   = Actions::ShowAccount.new(accounts_repository, accounts_renderer)
+  update_account = Actions::UpdateAccount.new(accounts_repository, accounts_renderer)
+  create_account = Actions::CreateAccount.new(accounts_repository, accounts_renderer)
+  delete_account = Actions::DeleteAccount.new(accounts_repository, accounts_renderer)
 
-    configure :development do
-      register Sinatra::Reloader
-    end
-
-    configure :test do
-      enable :logging, :dump_errors, :raise_errors
-    end
-
-    helpers do
-      def accounts_renderer; Renderers::HashAccountsJsonRenderer.new; end
-      def accounts_repository; Repositories::SequelRepository.new(Models::Account); end
-
-      def list_accounts; Actions::ListAccounts.new(accounts_repository, accounts_renderer); end
-      def show_account; Actions::ShowAccount.new(accounts_repository, accounts_renderer); end
-      def update_account; Actions::UpdateAccount.new(accounts_repository, accounts_renderer); end
-      def create_account; Actions::CreateAccount.new(accounts_repository, accounts_renderer); end
-      def delete_account; Actions::DeleteAccount.new(accounts_repository, accounts_renderer); end
-    end
-
-    get('/') { send_file File.join(settings.public_folder, 'index.html') }
-
-    get('/accounts') { list_accounts.call }
-    get('/accounts/:account_id') { show_account.call(params) }
-    patch('/accounts/:account_id') { update_account.call(params) }
-    post('/accounts') { create_account.call(params) }
-    delete('/accounts/:account_id') { delete_account.call(params) }
+  App = Rack::Mount::RouteSet.new do |app|
+    app.add_route list_accounts,  { request_method: 'GET',    path_info: %r{^/accounts$}                    }, {}, :list_accounts
+    app.add_route show_account,   { request_method: 'GET',    path_info: %r{^/accounts/(?<account_id>\d+)} }, {}, :show_account
+    app.add_route update_account, { request_method: 'PATCH',  path_info: %r{^/accounts/(?<account_id>\d+)} }, {}, :update_account
+    app.add_route create_account, { request_method: 'POST',   path_info: %r{^/accounts$}                    }, {}, :create_account
+    app.add_route delete_account, { request_method: 'DELETE', path_info: %r{^/accounts/(?<account_id>\d+)} }, {}, :delete_account
   end
-
 end

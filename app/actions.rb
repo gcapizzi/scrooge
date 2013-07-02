@@ -1,8 +1,15 @@
+require 'rack'
+
 module Scrooge
   module Actions
 
     module ParamsMethods
       private
+
+      def params(env)
+        params = Rack::Request.new(env).params
+        env['rack.routing_args'].merge(params)
+      end
 
       def include_key?(list, key)
         list.include?(key.to_s) || list.include?(key.to_sym)
@@ -11,18 +18,12 @@ module Scrooge
       def filter_params(params, white_list = repository.attributes)
         params.reject { |key| !include_key?(white_list, key) }
       end
-
-      def set_attributes!(object, attributes)
-        attributes.each do |attribute, value|
-          object.send("#{attribute}=", value)
-        end
-      end
     end
 
     module HttpResponsesMethods
       private
 
-      def response(status, body); [status, Array(body)]; end
+      def response(status, body); [status, {}, Array(body)]; end
 
       def ok(body = nil);          response(200, body); end
       def created(body = nil);     response(201, body); end
@@ -32,6 +33,7 @@ module Scrooge
 
     class Action
       include HttpResponsesMethods
+      include ParamsMethods
 
       attr_reader :repository, :renderer
 
@@ -39,17 +41,26 @@ module Scrooge
         @repository = repository
         @renderer = renderer
       end
+
+      private
+
+      def set_attributes!(object, attributes)
+        attributes.each do |attribute, value|
+          object.send("#{attribute}=", value)
+        end
+      end
     end
 
     class ListAccounts < Action
-      def call
+      def call(env)
         body = renderer.render(repository.all)
         ok(body)
       end
     end
 
     class ShowAccount < Action
-      def call(params)
+      def call(env)
+        params = params(env)
         id = params[:account_id].to_i
         account = repository.get(id) or return not_found
         body = renderer.render(account)
@@ -58,9 +69,8 @@ module Scrooge
     end
 
     class UpdateAccount < Action
-      include ParamsMethods
-
-      def call(params)
+      def call(env)
+        params = params(env)
         id = params[:account_id].to_i
         account = repository.get(id) or return not_found
 
@@ -75,9 +85,8 @@ module Scrooge
     end
 
     class CreateAccount < Action
-      include ParamsMethods
-
-      def call(params)
+      def call(env)
+        params = params(env)
         params = filter_params(params)
         account = repository.create(params)
 
@@ -91,7 +100,8 @@ module Scrooge
     end
 
     class DeleteAccount < Action
-      def call(params)
+      def call(env)
+        params = params(env)
         id = params[:account_id].to_i
         account = repository.get(id) or return not_found
 

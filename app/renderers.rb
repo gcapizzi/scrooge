@@ -1,3 +1,5 @@
+require 'json'
+
 module Scrooge
   module Renderers
 

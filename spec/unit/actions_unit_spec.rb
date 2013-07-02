@@ -11,11 +11,6 @@ module Scrooge
     let(:account) { double('account') }
     let(:account_json) { 'account json' }
     let(:accounts_json) { 'accounts json' }
-    let(:account_response) { [200, [account_json]] }
-    let(:account_created_response) { [201, [account_json]] }
-    let(:accounts_response) { [200, [accounts_json]] }
-    let(:not_found_response) { [404, []] }
-    let(:bad_request_response) { [400, []] }
 
     before do
       accounts_repository.stub(:all).and_return(accounts)
@@ -25,76 +20,99 @@ module Scrooge
       accounts_renderer.stub(:render).with(account).and_return(account_json)
     end
 
+    def req(app, url_params = {}, params = {})
+      Rack::MockRequest.new(app).request('', '', params: params, 'rack.routing_args' => url_params)
+    end
+
     describe Actions::ListAccounts do
       let(:list_accounts) { Actions::ListAccounts.new(accounts_repository, accounts_renderer) }
 
       it 'lists all accounts' do
-        expect(list_accounts.call).to eq(accounts_response)
+        response = req(list_accounts)
+        expect(response).to be_ok
+        expect(response.body).to eq(accounts_json)
       end
     end
 
     describe Actions::ShowAccount do
       let(:show_account) { Actions::ShowAccount.new(accounts_repository, accounts_renderer) }
 
-      it 'shows a single account' do
-        expect(show_account.call(account_id: account_id)).to eq(account_response)
+      context 'when the account exists' do
+        it 'returns the account' do
+          response = req(show_account, { :account_id => account_id })
+          expect(response).to be_ok
+          expect(response.body).to eq(account_json)
+        end
       end
 
-      it 'returns a 404 if the accounts doesn\'t exist' do
-        expect(show_account.call(account_id: wrong_account_id)).to eq(not_found_response)
+      context 'when the account doesn\'t exist' do
+        it 'returns a 404' do
+          response = req(show_account, { :account_id => wrong_account_id })
+          expect(response.status).to eq(404)
+        end
       end
     end
 
     describe Actions::UpdateAccount do
       let(:update_account) { Actions::UpdateAccount.new(accounts_repository, accounts_renderer) }
+      let(:new_name) { 'new account name' }
 
       context 'when the account exists' do
         context 'when params are valid' do
           it 'updates the account' do
-            new_name = 'new account name'
             account.should_receive(:name=).with(new_name)
             accounts_repository.should_receive(:update).with(account).and_return(true)
 
-            expect(update_account.call(account_id: account_id, name: new_name)).to eq(account_response)
+            response = req(update_account, { :account_id => account_id }, { 'name' => new_name })
+
+            expect(response).to be_ok
+            expect(response.body).to eq(account_json)
           end
         end
 
         context 'when params are invalid' do
           it 'returns a 400 Bad Request and doesn\'t update the account' do
-            name = 'an invalid name'
-            account.should_receive(:name=).with(name)
+            account.should_receive(:name=).with(new_name)
             accounts_repository.should_receive(:update).with(account).and_return(false)
 
-            expect(update_account.call(account_id: account_id, name: name)).to eq(bad_request_response)
+            response = req(update_account, { :account_id => account_id }, { 'name' => new_name })
+
+            expect(response.status).to eq(400)
           end
         end
       end
 
       context 'when the account doesn\'t exist' do
         it 'returns a 404 Not Found' do
-          expect(update_account.call(account_id: wrong_account_id, name: 'anything')).to eq(not_found_response)
+          response = req(update_account, { :account_id => wrong_account_id }, { 'name' => new_name })
+
+          expect(response.status).to eq(404)
         end
       end
     end
 
     describe Actions::CreateAccount do
       let(:create_account) { Actions::CreateAccount.new(accounts_repository, accounts_renderer) }
+      let(:name) { 'name' }
 
       context 'when params are valid' do
         it 'creates a new account' do
-          name = 'a name'
-          accounts_repository.should_receive(:create).with(name: name).and_return(account)
+          accounts_repository.should_receive(:create).with('name' => name).and_return(account)
 
-          expect(create_account.call(name: name, foo: 'bar')).to eq(account_created_response)
+          response = req(create_account, {}, { 'name' => name })
+
+          expect(response.status).to eq(201)
+          expect(response.body).to eq(account_json)
         end
       end
 
       context 'when params are invalid' do
         it 'returns a 400 Bad Request and doesn\'t create an account' do
-          name = 'an invalid name'
-          accounts_repository.should_receive(:create).with(name: name).and_return(nil)
+          accounts_repository.should_receive(:create).with('name' => name).and_return(nil)
 
-          expect(create_account.call(name: name)).to eq(bad_request_response)
+          response = req(create_account, {}, { 'name' => name })
+
+          expect(response.status).to eq(400)
         end
       end
     end
@@ -107,7 +125,10 @@ module Scrooge
           it 'destroys the object' do
             accounts_repository.should_receive(:destroy).with(account).and_return(true)
 
-            expect(delete_account.call(account_id: account_id)).to eq(account_response)
+            response = req(delete_account, { :account_id => account_id })
+
+            expect(response).to be_ok
+            expect(response.body).to eq(account_json)
           end
         end
 
@@ -115,14 +136,18 @@ module Scrooge
           it 'returns a 400 Bad Request and doesn\'t destroy the object' do
             accounts_repository.should_receive(:destroy).with(account).and_return(false)
 
-            expect(delete_account.call(account_id: account_id)).to eq(bad_request_response)
+            response = req(delete_account, { :account_id => account_id })
+
+            expect(response.status).to eq(400)
           end
         end
       end
 
       context 'when the object doesn\'t exist' do
         it 'returns a 404 Not Found' do
-          expect(delete_account.call(account_id: wrong_account_id)).to eq(not_found_response)
+          response = req(delete_account, { :account_id => wrong_account_id })
+
+          expect(response.status).to eq(404)
         end
       end
     end
