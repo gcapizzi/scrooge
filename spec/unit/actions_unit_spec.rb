@@ -63,7 +63,7 @@ module Scrooge
             account.should_receive(:name=).with(new_name)
             accounts_repository.should_receive(:update).with(account).and_return(true)
 
-            response = req(update_account, { :account_id => account_id }, { 'name' => new_name })
+            response = req(update_account, { :account_id => account_id }, { 'name' => new_name, 'filtered' => 'param' })
 
             expect(response).to be_ok
             expect(response.body).to eq(account_json)
@@ -99,7 +99,7 @@ module Scrooge
         it 'creates a new account' do
           accounts_repository.should_receive(:create).with('name' => name).and_return(account)
 
-          response = req(create_account, {}, { 'name' => name })
+          response = req(create_account, {}, { 'name' => name, 'filtered' => 'param' })
 
           expect(response.status).to eq(201)
           expect(response.body).to eq(account_json)
