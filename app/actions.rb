@@ -87,8 +87,7 @@ module Scrooge
     class CreateAccount < Action
       def call(env)
         params = req(env).params
-        params = filter_params(params)
-        account = repository.create(params)
+        account = repository.create(filter_params(params))
 
         if account
           body = renderer.render(account)
