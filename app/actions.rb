@@ -10,18 +10,6 @@ module Scrooge
 
   module Actions
 
-    module ParamsMethods
-      private
-
-      def include_key?(list, key)
-        list.include?(key.to_s) || list.include?(key.to_sym)
-      end
-
-      def filter_params(params, white_list = repository.attributes)
-        params.reject { |key| !include_key?(white_list, key) }
-      end
-    end
-
     module HttpResponsesMethods
       private
 
@@ -35,7 +23,6 @@ module Scrooge
 
     class Action
       include HttpResponsesMethods
-      include ParamsMethods
 
       attr_reader :repository, :renderer
 
@@ -48,12 +35,18 @@ module Scrooge
         Request.new(env)
       end
 
-      private
-
       def set_attributes!(object, attributes)
         attributes.each do |attribute, value|
           object.send("#{attribute}=", value)
         end
+      end
+
+      def include_key?(list, key)
+        list.include?(key.to_s) || list.include?(key.to_sym)
+      end
+
+      def filter_params(params, white_list = repository.attributes)
+        params.reject { |key| !include_key?(white_list, key) }
       end
     end
 
