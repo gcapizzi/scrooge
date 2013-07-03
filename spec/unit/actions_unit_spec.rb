@@ -21,7 +21,7 @@ module Scrooge
     end
 
     def req(app, url_params = {}, params = {})
-      Rack::MockRequest.new(app).request('', '', params: params, 'rack.routing_args' => url_params)
+      Rack::MockRequest.new(app).get('', params: params, 'rack.routing_args' => url_params, lint: true)
     end
 
     describe Actions::ListAccounts do
