@@ -1,15 +1,17 @@
 require 'rack'
 
 module Scrooge
+
+  class Request < Rack::Request
+    def params
+      super.merge(env['rack.routing_args'])
+    end
+  end
+
   module Actions
 
     module ParamsMethods
       private
-
-      def params(env)
-        params = Rack::Request.new(env).params
-        env['rack.routing_args'].merge(params)
-      end
 
       def include_key?(list, key)
         list.include?(key.to_s) || list.include?(key.to_sym)
@@ -42,6 +44,10 @@ module Scrooge
         @renderer = renderer
       end
 
+      def req(env)
+        Request.new(env)
+      end
+
       private
 
       def set_attributes!(object, attributes)
@@ -60,7 +66,7 @@ module Scrooge
 
     class ShowAccount < Action
       def call(env)
-        params = params(env)
+        params = req(env).params
         id = params[:account_id].to_i
         account = repository.get(id) or return not_found
         body = renderer.render(account)
@@ -70,7 +76,8 @@ module Scrooge
 
     class UpdateAccount < Action
       def call(env)
-        params = params(env)
+        params = req(env).params
+
         id = params[:account_id].to_i
         account = repository.get(id) or return not_found
 
@@ -86,7 +93,7 @@ module Scrooge
 
     class CreateAccount < Action
       def call(env)
-        params = params(env)
+        params = req(env).params
         params = filter_params(params)
         account = repository.create(params)
 
@@ -101,7 +108,7 @@ module Scrooge
 
     class DeleteAccount < Action
       def call(env)
-        params = params(env)
+        params = req(env).params
         id = params[:account_id].to_i
         account = repository.get(id) or return not_found
 
