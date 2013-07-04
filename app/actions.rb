@@ -13,12 +13,12 @@ module Scrooge
     module HttpResponsesMethods
       private
 
-      def response(status, body); [status, {}, Array(body)]; end
+      def response(status, body) [status, {}, Array(body)] end
 
-      def ok(body = nil);          response(200, body); end
-      def created(body = nil);     response(201, body); end
-      def bad_request(body = nil); response(400, body); end
-      def not_found(body = nil);   response(404, body); end
+      def ok(body = nil)          response(200, body) end
+      def created(body = nil)     response(201, body) end
+      def bad_request(body = nil) response(400, body) end
+      def not_found(body = nil)   response(404, body) end
     end
 
     class Action
