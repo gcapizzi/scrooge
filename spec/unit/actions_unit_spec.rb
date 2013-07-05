@@ -1,31 +1,35 @@
-require './app/actions'
+require './app/actions/accounts_actions'
+require './app/actions/transactions_actions'
 
-module Scrooge
+def req(url_params = {}, params = {})
+  Rack::MockRequest.new(subject).get('', params: params, 'rack.routing_args' => url_params, lint: true)
+end
 
-  describe Actions do
-    let(:accounts_repository) { double('accounts repository', attributes: [:name]) }
+describe Scrooge::Actions do
+  let(:accounts_repository) { double('accounts repository', attributes: [:name]) }
+  let(:account_id) { '123' }
+  let(:account) { double('account', id: account_id) }
+
+  before do
+    accounts_repository.stub(:get).with(account_id.to_i).and_return(account)
+  end
+
+  describe Scrooge::Actions::Accounts do
     let(:accounts_renderer) { double('accounts renderer') }
     let(:accounts) { double('accounts') }
-    let(:account_id) { '123' }
     let(:wrong_account_id) { '456' }
-    let(:account) { double('account') }
     let(:account_json) { 'account json' }
     let(:accounts_json) { 'accounts json' }
 
     before do
       accounts_repository.stub(:all).and_return(accounts)
-      accounts_repository.stub(:get).with(account_id.to_i).and_return(account)
       accounts_repository.stub(:get).with(wrong_account_id.to_i).and_return(nil)
       accounts_renderer.stub(:render).with(accounts).and_return(accounts_json)
       accounts_renderer.stub(:render).with(account).and_return(account_json)
     end
 
-    def req(url_params = {}, params = {})
-      Rack::MockRequest.new(subject).get('', params: params, 'rack.routing_args' => url_params, lint: true)
-    end
-
-    describe Actions::ListAccounts do
-      subject { Actions::ListAccounts.new(accounts_repository, accounts_renderer) }
+    describe Scrooge::Actions::Accounts::List do
+      subject { Scrooge::Actions::Accounts::List.new(accounts_repository, accounts_renderer) }
 
       it 'lists all accounts' do
         response = req
@@ -34,8 +38,8 @@ module Scrooge
       end
     end
 
-    describe Actions::ShowAccount do
-      subject { Actions::ShowAccount.new(accounts_repository, accounts_renderer) }
+    describe Scrooge::Actions::Accounts::Show do
+      subject { Scrooge::Actions::Accounts::Show.new(accounts_repository, accounts_renderer) }
 
       context 'when the account exists' do
         it 'returns the account' do
@@ -53,8 +57,8 @@ module Scrooge
       end
     end
 
-    describe Actions::UpdateAccount do
-      subject { Actions::UpdateAccount.new(accounts_repository, accounts_renderer) }
+    describe Scrooge::Actions::Accounts::Update do
+      subject { Scrooge::Actions::Accounts::Update.new(accounts_repository, accounts_renderer) }
       let(:new_name) { 'new account name' }
 
       context 'when the account exists' do
@@ -91,8 +95,8 @@ module Scrooge
       end
     end
 
-    describe Actions::CreateAccount do
-      subject { Actions::CreateAccount.new(accounts_repository, accounts_renderer) }
+    describe Scrooge::Actions::Accounts::Create do
+      subject { Scrooge::Actions::Accounts::Create.new(accounts_repository, accounts_renderer) }
       let(:name) { 'name' }
 
       context 'when params are valid' do
@@ -117,8 +121,8 @@ module Scrooge
       end
     end
 
-    describe Actions::DeleteAccount do
-      subject { Actions::DeleteAccount.new(accounts_repository, accounts_renderer) }
+    describe Scrooge::Actions::Accounts::Delete do
+      subject { Scrooge::Actions::Accounts::Delete.new(accounts_repository, accounts_renderer) }
 
       context 'when the objects exists' do
         context 'when the operation succeeds' do
@@ -152,4 +156,25 @@ module Scrooge
       end
     end
   end
+
+  describe Scrooge::Actions::Transactions do
+    let(:transactions) { double('transactions') }
+    let(:transactions_renderer) { 'transactions renderer' }
+    let(:transactions_json) { 'transactions json' }
+
+    before do
+      account.stub(:transactions).and_return(transactions)
+    end
+
+    subject { Scrooge::Actions::Transactions::List.new(accounts_repository, transactions_renderer) }
+
+    it 'lists all transactions from an account' do
+      transactions_renderer.should_receive(:render).with(transactions).and_return(transactions_json)
+
+      response = req(account_id: account_id)
+      expect(response.status).to eq(200)
+      expect(response.body).to eq(transactions_json)
+    end
+  end
+
 end
