@@ -64,10 +64,10 @@ describe Scrooge::Actions do
       context 'when the account exists' do
         context 'when params are valid' do
           it 'updates the account' do
-            account.should_receive(:name=).with(new_name)
+            account.should_receive(:set).with('name' => new_name)
             accounts_repository.should_receive(:update).with(account).and_return(true)
 
-            response = req({ account_id: account_id }, { 'name' => new_name, 'filtered' => 'param' })
+            response = req({ account_id: account_id }, { 'name' => new_name })
 
             expect(response).to be_ok
             expect(response.body).to eq(account_json)
@@ -76,7 +76,7 @@ describe Scrooge::Actions do
 
         context 'when params are invalid' do
           it 'returns a 400 Bad Request and doesn\'t update the account' do
-            account.should_receive(:name=).with(new_name)
+            account.should_receive(:set).with('name' => new_name)
             accounts_repository.should_receive(:update).with(account).and_return(false)
 
             response = req({ account_id: account_id }, { 'name' => new_name })
@@ -103,7 +103,7 @@ describe Scrooge::Actions do
         it 'creates a new account' do
           accounts_repository.should_receive(:create).with('name' => name).and_return(account)
 
-          response = req({}, { 'name' => name, 'filtered' => 'param' })
+          response = req({}, { 'name' => name })
 
           expect(response.status).to eq(201)
           expect(response.body).to eq(account_json)

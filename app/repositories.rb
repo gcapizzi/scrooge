@@ -25,10 +25,6 @@ module Scrooge
       def destroy(object)
         object.destroy
       end
-
-      def attributes
-        @model_collection.columns - [:id]
-      end
     end
 
   end

@@ -3,28 +3,14 @@ require 'rack'
 module Scrooge
 
   class Request < Rack::Request
-    def params
-      super.merge(env['rack.routing_args'])
+    def url_params
+      env['rack.routing_args']
     end
   end
 
   class Action
     def req(env)
       Request.new(env)
-    end
-
-    def set_attributes!(object, attributes)
-      attributes.each do |attribute, value|
-        object.send("#{attribute}=", value)
-      end
-    end
-
-    def include_key?(list, key)
-      list.include?(key.to_s) || list.include?(key.to_sym)
-    end
-
-    def filter_params(params, white_list = repository.attributes)
-      params.reject { |key| !include_key?(white_list, key) }
     end
 
     def response(status, body) [status, {}, Array(body)] end

@@ -12,6 +12,9 @@ when 'development'
   DB = Sequel.sqlite('db/scrooge.db')
 end
 
+# ignore missing params
+Sequel::Model.strict_param_setting = false
+
 module Scrooge
   module Models
 

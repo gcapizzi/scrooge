@@ -77,12 +77,6 @@ module Scrooge
           expect(subject.all.count).to eq(2)
         end
       end
-
-      describe '#attributes' do
-        it 'returns the list of the model attributes, except the id' do
-          expect(subject.attributes).to eq([:name])
-        end
-      end
     end
 
     describe SequelRepository do

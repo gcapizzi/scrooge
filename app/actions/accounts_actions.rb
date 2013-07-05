@@ -24,8 +24,7 @@ module Scrooge
 
       class Show < Action
         def call(env)
-          params = req(env).params
-          id = params[:account_id].to_i
+          id = req(env).url_params[:account_id].to_i
           account = repository.get(id) or return not_found
           body = renderer.render(account)
           ok(body)
@@ -34,12 +33,12 @@ module Scrooge
 
       class Update < Action
         def call(env)
-          params = req(env).params
+          req = req(env)
 
-          id = params[:account_id].to_i
+          id = req.url_params[:account_id].to_i
           account = repository.get(id) or return not_found
 
-          set_attributes!(account, filter_params(params))
+          account.set(req.params)
           if repository.update(account)
             body = renderer.render(account)
             ok(body)
@@ -51,8 +50,7 @@ module Scrooge
 
       class Create < Action
         def call(env)
-          params = req(env).params
-          account = repository.create(filter_params(params))
+          account = repository.create(req(env).params)
 
           if account
             body = renderer.render(account)
@@ -65,8 +63,7 @@ module Scrooge
 
       class Delete < Action
         def call(env)
-          params = req(env).params
-          id = params[:account_id].to_i
+          id = req(env).url_params[:account_id].to_i
           account = repository.get(id) or return not_found
 
           if repository.destroy(account)
