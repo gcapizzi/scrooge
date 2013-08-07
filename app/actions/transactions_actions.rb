@@ -7,8 +7,6 @@ module Scrooge
     module Transactions
 
       class List < Action
-        attr_reader :accounts_repository, :renderer
-
         def initialize(accounts_repository, renderer)
           @accounts_repository = accounts_repository
           @renderer = renderer
@@ -16,8 +14,8 @@ module Scrooge
 
         def call(env)
           account_id = req(env).url_params[:account_id].to_i
-          account = accounts_repository.get(account_id)
-          body = renderer.render(account.transactions)
+          account = @accounts_repository.get(account_id)
+          body = @renderer.render(account.transactions)
           ok(body)
         end
       end
