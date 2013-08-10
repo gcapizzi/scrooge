@@ -20,8 +20,8 @@ def parse_json(json_response)
   JSON.parse(json_response, symbolize_names: true)
 end
 
-def make_request(url_params = {}, params = {})
-  req = double(Scrooge::Request, params: params, url_params: url_params)
+def make_request(params = {})
+  req = double(Scrooge::Request, params: params)
   resp = subject.call(req)
   Rack::MockResponse.new(*resp)
 end

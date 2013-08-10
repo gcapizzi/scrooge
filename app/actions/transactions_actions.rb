@@ -12,7 +12,7 @@ module Scrooge
       end
 
       def call(req)
-        account_id = req.url_params['account_id'].to_i
+        account_id = req.params['account_id'].to_i
         account = @accounts_repository.get(account_id)
         body = @renderer.render(account.transactions)
         ok(body)

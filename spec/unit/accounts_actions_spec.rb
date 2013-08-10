@@ -1,9 +1,9 @@
 require './app/actions/accounts_actions'
 
 describe Scrooge::Actions do
-  let(:account_id) { '123' }
-  let(:wrong_account_id) { '456' }
-  let(:account) { double('account', id: account_id) }
+  let(:id) { '123' }
+  let(:wrong_id) { '456' }
+  let(:account) { double('account', id: id) }
   let(:accounts) { double('accounts') }
   let(:account_json) { 'account json' }
   let(:accounts_json) { 'accounts json' }
@@ -11,8 +11,8 @@ describe Scrooge::Actions do
   let(:accounts_renderer) { double('accounts renderer') }
 
   before do
-    accounts_repository.stub(:get).with(account_id.to_i).and_return(account)
-    accounts_repository.stub(:get).with(wrong_account_id.to_i).and_return(nil)
+    accounts_repository.stub(:get).with(id.to_i).and_return(account)
+    accounts_repository.stub(:get).with(wrong_id.to_i).and_return(nil)
     accounts_renderer.stub(:render).with(accounts).and_return(accounts_json)
     accounts_renderer.stub(:render).with(account).and_return(account_json)
   end
@@ -35,7 +35,7 @@ describe Scrooge::Actions do
 
     context 'when the account exists' do
       it 'returns the account' do
-        response = make_request('account_id' => account_id)
+        response = make_request('id' => id)
         expect(response).to be_ok
         expect(response.body).to eq(account_json)
       end
@@ -43,7 +43,7 @@ describe Scrooge::Actions do
 
     context 'when the account doesn\'t exist' do
       it 'returns a 404' do
-        response = make_request('account_id' => wrong_account_id)
+        response = make_request('id' => wrong_id)
         expect(response.status).to eq(404)
       end
     end
@@ -56,10 +56,10 @@ describe Scrooge::Actions do
     context 'when the account exists' do
       context 'when params are valid' do
         it 'updates the account' do
-          account.should_receive(:set).with('name' => new_name)
+          account.should_receive(:set).with('id' => id, 'name' => new_name)
           accounts_repository.should_receive(:update).with(account).and_return(true)
 
-          response = make_request({ 'account_id' => account_id }, { 'name' => new_name })
+          response = make_request('id' => id, 'name' => new_name)
 
           expect(response).to be_ok
           expect(response.body).to eq(account_json)
@@ -68,10 +68,10 @@ describe Scrooge::Actions do
 
       context 'when params are invalid' do
         it 'returns a 400 Bad Request and doesn\'t update the account' do
-          account.should_receive(:set).with('name' => new_name)
+          account.should_receive(:set).with('id' => id, 'name' => new_name)
           accounts_repository.should_receive(:update).with(account).and_return(false)
 
-          response = make_request({ 'account_id' => account_id }, { 'name' => new_name })
+          response = make_request('id' => id, 'name' => new_name)
 
           expect(response.status).to eq(400)
         end
@@ -80,7 +80,7 @@ describe Scrooge::Actions do
 
     context 'when the account doesn\'t exist' do
       it 'returns a 404 Not Found' do
-        response = make_request({ 'account_id' => wrong_account_id }, { 'name' => new_name })
+        response = make_request('id' => wrong_id, 'name' => new_name)
 
         expect(response.status).to eq(404)
       end
@@ -95,7 +95,7 @@ describe Scrooge::Actions do
       it 'creates a new account' do
         accounts_repository.should_receive(:create).with('name' => name).and_return(account)
 
-        response = make_request({}, { 'name' => name })
+        response = make_request('name' => name)
 
         expect(response.status).to eq(201)
         expect(response.body).to eq(account_json)
@@ -106,7 +106,7 @@ describe Scrooge::Actions do
       it 'returns a 400 Bad Request and doesn\'t create an account' do
         accounts_repository.should_receive(:create).with('name' => name).and_return(nil)
 
-        response = make_request({}, { 'name' => name })
+        response = make_request('name' => name)
 
         expect(response.status).to eq(400)
       end
@@ -121,7 +121,7 @@ describe Scrooge::Actions do
         it 'destroys the object' do
           accounts_repository.should_receive(:destroy).with(account).and_return(true)
 
-          response = make_request('account_id' => account_id)
+          response = make_request('id' => id)
 
           expect(response).to be_ok
           expect(response.body).to eq(account_json)
@@ -132,7 +132,7 @@ describe Scrooge::Actions do
         it 'returns a 400 Bad Request and doesn\'t destroy the object' do
           accounts_repository.should_receive(:destroy).with(account).and_return(false)
 
-          response = make_request('account_id' => account_id)
+          response = make_request('id' => id)
 
           expect(response.status).to eq(400)
         end
@@ -141,7 +141,7 @@ describe Scrooge::Actions do
 
     context 'when the object doesn\'t exist' do
       it 'returns a 404 Not Found' do
-        response = make_request('account_id' => wrong_account_id)
+        response = make_request('id' => wrong_id)
 
         expect(response.status).to eq(404)
       end

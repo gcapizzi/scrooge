@@ -20,7 +20,7 @@ module Scrooge
 
     class ShowAccount < AccountsAction
       def call(req)
-        id = req.url_params['account_id'].to_i
+        id = req.params['id'].to_i
         account = @repository.get(id) or return not_found
         body = @renderer.render(account)
         ok(body)
@@ -29,7 +29,7 @@ module Scrooge
 
     class UpdateAccount < AccountsAction
       def call(req)
-        id = req.url_params['account_id'].to_i
+        id = req.params['id'].to_i
         account = @repository.get(id) or return not_found
 
         account.set(req.params)
@@ -57,7 +57,7 @@ module Scrooge
 
     class DeleteAccount < AccountsAction
       def call(req)
-        id = req.url_params['account_id'].to_i
+        id = req.params['id'].to_i
         account = @repository.get(id) or return not_found
 
         if @repository.destroy(account)

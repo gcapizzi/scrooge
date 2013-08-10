@@ -11,6 +11,10 @@ module Scrooge
       stringify_keys(env['rack.routing_args'])
     end
 
+    def params
+      url_params.merge(super)
+    end
+
     private
 
     def stringify_keys(hash)
