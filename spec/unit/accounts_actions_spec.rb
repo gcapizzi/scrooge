@@ -12,7 +12,6 @@ describe Scrooge::Actions do
 
   before do
     accounts_repository.stub(:get).with(account_id.to_i).and_return(account)
-    accounts_repository.stub(:all).and_return(accounts)
     accounts_repository.stub(:get).with(wrong_account_id.to_i).and_return(nil)
     accounts_renderer.stub(:render).with(accounts).and_return(accounts_json)
     accounts_renderer.stub(:render).with(account).and_return(account_json)
@@ -22,7 +21,10 @@ describe Scrooge::Actions do
     subject { Scrooge::Actions::ListAccounts.new(accounts_repository, accounts_renderer) }
 
     it 'lists all accounts' do
+      accounts_repository.stub(:all).and_return(accounts)
+
       response = make_request
+
       expect(response).to be_ok
       expect(response.body).to eq(accounts_json)
     end
