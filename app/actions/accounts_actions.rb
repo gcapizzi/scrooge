@@ -12,15 +12,15 @@ module Scrooge
     end
 
     class ListAccounts < AccountsAction
-      def call(env)
+      def call(req)
         body = @renderer.render(@repository.all)
         ok(body)
       end
     end
 
     class ShowAccount < AccountsAction
-      def call(env)
-        id = req(env).url_params['account_id'].to_i
+      def call(req)
+        id = req.url_params['account_id'].to_i
         account = @repository.get(id) or return not_found
         body = @renderer.render(account)
         ok(body)
@@ -28,9 +28,7 @@ module Scrooge
     end
 
     class UpdateAccount < AccountsAction
-      def call(env)
-        req = req(env)
-
+      def call(req)
         id = req.url_params['account_id'].to_i
         account = @repository.get(id) or return not_found
 
@@ -45,8 +43,8 @@ module Scrooge
     end
 
     class CreateAccount < AccountsAction
-      def call(env)
-        account = @repository.create(req(env).params)
+      def call(req)
+        account = @repository.create(req.params)
 
         if account
           body = @renderer.render(account)
@@ -58,8 +56,8 @@ module Scrooge
     end
 
     class DeleteAccount < AccountsAction
-      def call(env)
-        id = req(env).url_params['account_id'].to_i
+      def call(req)
+        id = req.url_params['account_id'].to_i
         account = @repository.get(id) or return not_found
 
         if @repository.destroy(account)

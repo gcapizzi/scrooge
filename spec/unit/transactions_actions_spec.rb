@@ -18,7 +18,7 @@ describe Scrooge::Actions do
   it 'lists all transactions from an account' do
     transactions_renderer.should_receive(:render).with(transactions).and_return(transactions_json)
 
-    response = make_request(account_id: account_id)
+    response = make_request('account_id' => account_id)
     expect(response.status).to eq(200)
     expect(response.body).to eq(transactions_json)
   end

@@ -21,5 +21,7 @@ def parse_json(json_response)
 end
 
 def make_request(url_params = {}, params = {})
-  Rack::MockRequest.new(subject).get('', params: params, 'rack.routing_args' => url_params, lint: true)
+  req = double(Scrooge::Request, params: params, url_params: url_params)
+  resp = subject.call(req)
+  Rack::MockResponse.new(*resp)
 end

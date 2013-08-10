@@ -1,12 +1,16 @@
 require 'rack/mount'
 
+require './app/utils'
+
 class Router
   def initialize(route_set = Rack::Mount::RouteSet.new)
     @route_set = route_set
   end
 
   def route(verb, url_pattern, action, name)
-    @route_set.add_route(action, { request_method: verb, path_info: url_pattern }, {}, name)
+    wrapped_action = wrap_action(action)
+    matcher = { request_method: verb, path_info: url_pattern }
+    @route_set.add_route(wrapped_action, matcher, {}, name)
   end
 
   # verb-specific routes
@@ -29,5 +33,14 @@ class Router
 
   def call(env)
     @route_set.call(env)
+  end
+
+  private
+
+  def wrap_action(action)
+    proc do |env|
+      request = Scrooge::Request.from_env(env)
+      action.call(request)
+    end
   end
 end

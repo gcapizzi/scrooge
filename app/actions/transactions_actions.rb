@@ -11,8 +11,8 @@ module Scrooge
         @renderer = renderer
       end
 
-      def call(env)
-        account_id = req(env).url_params['account_id'].to_i
+      def call(req)
+        account_id = req.url_params['account_id'].to_i
         account = @accounts_repository.get(account_id)
         body = @renderer.render(account.transactions)
         ok(body)
