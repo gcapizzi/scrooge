@@ -1,6 +1,4 @@
-require 'rack'
-
-require_relative '../utils'
+require_relative '../framework'
 
 module Scrooge
   module Actions
