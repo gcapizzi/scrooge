@@ -4,7 +4,13 @@ module Scrooge
 
   class Request < Rack::Request
     def url_params
-      env['rack.routing_args']
+      stringify_keys(env['rack.routing_args'])
+    end
+
+    private
+
+    def stringify_keys(hash)
+      Hash[hash.to_a.map { |key, val| [key.to_s, val] }]
     end
   end
 
