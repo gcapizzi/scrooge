@@ -2,6 +2,7 @@ require 'dim'
 
 require './app/actions/accounts_actions'
 require './app/actions/transactions_actions'
+require './app/models'
 require './app/repositories'
 require './app/renderers'
 

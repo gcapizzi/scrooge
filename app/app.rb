@@ -1,11 +1,6 @@
 require 'rubygems'
 require 'bundler/setup'
 
-require './app/models'
-require './app/actions/accounts_actions'
-require './app/actions/transactions_actions'
-require './app/repositories'
-require './app/renderers'
 require './app/framework'
 require './app/container'
 
