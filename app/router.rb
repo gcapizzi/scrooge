@@ -26,4 +26,8 @@ class Router
   def self.build(&block)
     new.build(&block)
   end
+
+  def call(env)
+    @route_set.call(env)
+  end
 end

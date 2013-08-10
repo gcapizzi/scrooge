@@ -14,7 +14,7 @@ describe Scrooge::Actions do
     accounts_repository.stub(:get).with(account_id.to_i).and_return(account)
   end
 
-  describe Scrooge::Actions::Accounts do
+  describe 'accounts actions' do
     let(:accounts_renderer) { double('accounts renderer') }
     let(:accounts) { double('accounts') }
     let(:wrong_account_id) { '456' }
@@ -28,8 +28,8 @@ describe Scrooge::Actions do
       accounts_renderer.stub(:render).with(account).and_return(account_json)
     end
 
-    describe Scrooge::Actions::Accounts::List do
-      subject { Scrooge::Actions::Accounts::List.new(accounts_repository, accounts_renderer) }
+    describe Scrooge::Actions::ListAccounts do
+      subject { Scrooge::Actions::ListAccounts.new(accounts_repository, accounts_renderer) }
 
       it 'lists all accounts' do
         response = req
@@ -38,8 +38,8 @@ describe Scrooge::Actions do
       end
     end
 
-    describe Scrooge::Actions::Accounts::Show do
-      subject { Scrooge::Actions::Accounts::Show.new(accounts_repository, accounts_renderer) }
+    describe Scrooge::Actions::ShowAccount do
+      subject { Scrooge::Actions::ShowAccount.new(accounts_repository, accounts_renderer) }
 
       context 'when the account exists' do
         it 'returns the account' do
@@ -57,8 +57,8 @@ describe Scrooge::Actions do
       end
     end
 
-    describe Scrooge::Actions::Accounts::Update do
-      subject { Scrooge::Actions::Accounts::Update.new(accounts_repository, accounts_renderer) }
+    describe Scrooge::Actions::UpdateAccount do
+      subject { Scrooge::Actions::UpdateAccount.new(accounts_repository, accounts_renderer) }
       let(:new_name) { 'new account name' }
 
       context 'when the account exists' do
@@ -95,8 +95,8 @@ describe Scrooge::Actions do
       end
     end
 
-    describe Scrooge::Actions::Accounts::Create do
-      subject { Scrooge::Actions::Accounts::Create.new(accounts_repository, accounts_renderer) }
+    describe Scrooge::Actions::CreateAccount do
+      subject { Scrooge::Actions::CreateAccount.new(accounts_repository, accounts_renderer) }
       let(:name) { 'name' }
 
       context 'when params are valid' do
@@ -121,8 +121,8 @@ describe Scrooge::Actions do
       end
     end
 
-    describe Scrooge::Actions::Accounts::Delete do
-      subject { Scrooge::Actions::Accounts::Delete.new(accounts_repository, accounts_renderer) }
+    describe Scrooge::Actions::DeleteAccount do
+      subject { Scrooge::Actions::DeleteAccount.new(accounts_repository, accounts_renderer) }
 
       context 'when the objects exists' do
         context 'when the operation succeeds' do
@@ -157,7 +157,7 @@ describe Scrooge::Actions do
     end
   end
 
-  describe Scrooge::Actions::Transactions do
+  describe 'transactions actions' do
     let(:transactions) { double('transactions') }
     let(:transactions_renderer) { 'transactions renderer' }
     let(:transactions_json) { 'transactions json' }
@@ -166,7 +166,7 @@ describe Scrooge::Actions do
       account.stub(:transactions).and_return(transactions)
     end
 
-    subject { Scrooge::Actions::Transactions::List.new(accounts_repository, transactions_renderer) }
+    subject { Scrooge::Actions::ListTransactions.new(accounts_repository, transactions_renderer) }
 
     it 'lists all transactions from an account' do
       transactions_renderer.should_receive(:render).with(transactions).and_return(transactions_json)

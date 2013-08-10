@@ -7,6 +7,7 @@ gem 'sass'
 gem 'zurb-foundation'
 gem 'rake'
 gem 'rack-mount'
+gem 'dim'
 
 group :test, :development do
   gem 'rspec'
