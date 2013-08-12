@@ -27,5 +27,14 @@ module Scrooge
       end
     end
 
+    class SequelTransactionsRepository < SequelRepository
+      def initialize
+        super(Scrooge::Models::Transaction)
+      end
+
+      def from_account(account_id)
+        @model_collection.where(account_id: account_id)
+      end
+    end
   end
 end

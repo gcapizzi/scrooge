@@ -18,6 +18,9 @@ describe Scrooge::App do
       transaction = Scrooge::Models::Transaction.create(description: "transaction #{i}", amount: BigDecimal.new('12.34'))
       @account.add_transaction(transaction)
     end
+    2.times do
+      Scrooge::Models::Transaction.create(description: "some transaction", amount: BigDecimal.new('12.34'))
+    end
   end
 
   describe 'GET /accounts/:account_id/transactions' do

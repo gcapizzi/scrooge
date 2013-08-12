@@ -19,6 +19,7 @@ module Scrooge
   Container.register(:delete_account) { |c| Actions::DeleteAccount.new(c.accounts_repository, c.accounts_renderer) }
 
   Container.register(:transactions_renderer) { Renderers::HashTransactionsJsonRenderer.new }
+  Container.register(:transactions_repository) { Repositories::SequelTransactionsRepository.new }
 
-  Container.register(:list_transactions) { |c| Actions::ListTransactions.new(c.accounts_repository, c.transactions_renderer) }
+  Container.register(:list_transactions) { |c| Actions::ListTransactions.new(c.transactions_repository, c.transactions_renderer) }
 end

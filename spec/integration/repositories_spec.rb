@@ -89,5 +89,24 @@ module Scrooge
       it_behaves_like 'a repository'
     end
 
+    describe SequelTransactionsRepository do
+      describe '#from_account' do
+        it 'returns all transactions from an account' do
+          Models::Account.dataset.destroy
+          Models::Transaction.dataset.destroy
+
+          account = Models::Account.create(name: 'an account')
+          (1..3).map do |i|
+            transaction = Models::Transaction.create(description: "transaction #{i}", amount: BigDecimal.new('12.34'))
+            account.add_transaction(transaction)
+          end
+          2.times { Models::Transaction.create(description: 'a transaction', amount: BigDecimal.new('0')) }
+
+          expect(subject.from_account(account.id).count).to eq(3)
+          expect(subject.from_account(account.id).first).to eq(account.transactions.first)
+        end
+      end
+    end
+
   end
 end
