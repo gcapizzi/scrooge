@@ -4,7 +4,7 @@ describe Scrooge::Actions do
   let(:account_id) { '123' }
   let(:transactions_repository) { double('transactions repository', attributes: [:description, :amount]) }
   let(:transactions) { double('transactions') }
-  let(:transactions_renderer) { 'transactions renderer' }
+  let(:transactions_renderer) { double('transactions renderer') }
   let(:transactions_json) { 'transactions json' }
 
   before do
