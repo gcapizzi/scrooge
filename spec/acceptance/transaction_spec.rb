@@ -8,11 +8,6 @@ require './app/app'
 describe 'Scrooge::App'  do
   include Rack::Test::Methods
 
-  before do
-    Scrooge::Models::Account.dataset.destroy
-    Scrooge::Models::Transaction.dataset.destroy
-  end
-
   let(:app) { Scrooge::App }
   let!(:account) { Fabricate(:account) }
 

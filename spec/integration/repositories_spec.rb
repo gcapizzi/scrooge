@@ -81,7 +81,6 @@ module Scrooge
 
     describe SequelRepository do
       before(:each) do
-        Models::Account.dataset.destroy
         @accounts = (1..3).map { |i| Fabricate(:account) }
       end
 
@@ -93,11 +92,6 @@ module Scrooge
       let(:account) { Fabricate(:account) }
       let(:transactions) { account.transactions }
       let(:other_transactions) { 2.times { Fabricate(:transaction) } }
-
-      before do
-        Models::Account.dataset.destroy
-        Models::Transaction.dataset.destroy
-      end
 
       describe '#from_account' do
         it 'returns all transactions from an account' do

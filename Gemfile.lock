@@ -3,6 +3,7 @@ GEM
   specs:
     coderay (1.0.9)
     columnize (0.3.6)
+    database_cleaner (1.1.1)
     debugger (1.6.1)
       columnize (>= 0.3.1)
       debugger-linecache (~> 1.2.0)
@@ -85,6 +86,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  database_cleaner
   debugger
   dim
   fabrication
