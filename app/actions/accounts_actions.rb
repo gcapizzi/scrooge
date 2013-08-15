@@ -1,4 +1,4 @@
-require './app/framework'
+require './lib/framework'
 
 module Scrooge
   module Actions

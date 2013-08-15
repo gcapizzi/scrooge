@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'bundler/setup'
 
-require './app/framework'
+require './lib/framework'
 require './app/container'
 
 module Scrooge
