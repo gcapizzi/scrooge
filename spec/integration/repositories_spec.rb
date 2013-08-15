@@ -7,7 +7,7 @@ module Scrooge
   module Repositories
 
     shared_examples 'a repository' do
-      let(:account) { @accounts.first }
+      let(:account) { accounts.first }
 
       describe '#get' do
         context 'when the object exists' do
@@ -25,7 +25,7 @@ module Scrooge
 
       describe '#all' do
         it 'returns all objects in the collection' do
-          expect(subject.all).to eq(@accounts)
+          expect(subject.all).to eq(accounts)
         end
       end
 
@@ -80,9 +80,7 @@ module Scrooge
     end
 
     describe SequelRepository do
-      before(:each) do
-        @accounts = (1..3).map { |i| Fabricate(:account) }
-      end
+      let!(:accounts) { (1..3).map { |i| Fabricate(:account) } }
 
       subject { SequelRepository.new(Models::Account) }
       it_behaves_like 'a repository'
