@@ -82,7 +82,7 @@ module Scrooge
     describe SequelRepository do
       before(:each) do
         Models::Account.dataset.destroy
-        @accounts = (1..3).map { |i| Models::Account.create(name: "account #{i}") }
+        @accounts = (1..3).map { |i| Fabricate(:account) }
       end
 
       subject { SequelRepository.new(Models::Account) }
@@ -90,20 +90,19 @@ module Scrooge
     end
 
     describe SequelTransactionsRepository do
+      let(:account) { Fabricate(:account) }
+      let(:transactions) { account.transactions }
+      let(:other_transactions) { 2.times { Fabricate(:transaction) } }
+
+      before do
+        Models::Account.dataset.destroy
+        Models::Transaction.dataset.destroy
+      end
+
       describe '#from_account' do
         it 'returns all transactions from an account' do
-          Models::Account.dataset.destroy
-          Models::Transaction.dataset.destroy
-
-          account = Models::Account.create(name: 'an account')
-          (1..3).map do |i|
-            transaction = Models::Transaction.create(description: "transaction #{i}", amount: BigDecimal.new('12.34'))
-            account.add_transaction(transaction)
-          end
-          2.times { Models::Transaction.create(description: 'a transaction', amount: BigDecimal.new('0')) }
-
           expect(subject.from_account(account.id).count).to eq(3)
-          expect(subject.from_account(account.id).first).to eq(account.transactions.first)
+          expect(subject.from_account(account.id).all).to eq(transactions)
         end
       end
     end

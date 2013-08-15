@@ -5,16 +5,16 @@ require 'rack/test'
 require './app/models'
 require './app/app'
 
-describe Scrooge::App do
+describe 'Scrooge::App' do
   include Rack::Test::Methods
-
-  let(:app) { Scrooge::App }
 
   before do
     Scrooge::Models::Account.dataset.destroy
-    @accounts = (1..3).map { |i| Scrooge::Models::Account.create(name: "account #{i}") }
-    @account = @accounts.first
   end
+
+  let(:app) { Scrooge::App }
+  let!(:accounts) { (1..3).map { Fabricate(:account) } }
+  let!(:account) { accounts.first }
 
   describe 'GET /accounts' do
     it 'returns all accounts' do
@@ -28,7 +28,7 @@ describe Scrooge::App do
   describe 'GET /accounts/:id' do
     context 'when the account exists' do
       it 'returns the specified account' do
-        get "/accounts/#{@account.id}"
+        get "/accounts/#{account.id}"
         expect(last_response.status).to eq(200)
         expect(parse_json(last_response.body)[:accounts]).not_to be_nil
       end
@@ -49,10 +49,10 @@ describe Scrooge::App do
         it 'updates the account' do
           new_name = 'new account name'
 
-          patch "/accounts/#{@account.id}", name: new_name
+          patch "/accounts/#{account.id}", name: new_name
           expect(last_response.status).to eq(200)
 
-          get "/accounts/#{@account.id}"
+          get "/accounts/#{account.id}"
           account_json = parse_json(last_response.body)[:accounts][0]
           expect(account_json[:name]).to eq(new_name)
         end
@@ -60,11 +60,11 @@ describe Scrooge::App do
 
       context 'when params are invalid' do
         it 'returns a 400 Bad Request and doesn\'t update the account' do
-          patch "/accounts/#{@account.id}", name: ''
+          patch "/accounts/#{account.id}", name: ''
           expect(last_response.status).to eq(400)
           expect(last_response.body).to be_empty
 
-          get "/accounts/#{@account.id}"
+          get "/accounts/#{account.id}"
           expect(last_response.status).to eq(200)
           account_json = parse_json(last_response.body)[:accounts][0]
           expect(account_json[:name]).not_to be_empty
@@ -112,14 +112,14 @@ describe Scrooge::App do
   describe 'DELETE /accounts/:id' do
     context 'when the account exists' do
       it 'deletes the account' do
-        delete "/accounts/#{@account.id}"
+        delete "/accounts/#{account.id}"
         expect(last_response.status).to eq(200)
 
         account_json = parse_json(last_response.body)[:accounts][0]
-        expect(account_json[:id]).to eq(@account.id)
-        expect(account_json[:name]).to eq(@account.name)
+        expect(account_json[:id]).to eq(account.id)
+        expect(account_json[:name]).to eq(account.name)
 
-        get "/accounts/#{@account.id}"
+        get "/accounts/#{account.id}"
         expect(last_response.status).to eq(404)
 
         get '/accounts'
