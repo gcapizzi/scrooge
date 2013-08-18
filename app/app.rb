@@ -6,7 +6,7 @@ require './app/container'
 
 module Scrooge
   router = Router.new
-  Container.register(:router) { router }
+  Container.register(:router) { router }
 
   router.build do
     get    %r{^/accounts$},            Container.list_accounts,  :list_accounts
