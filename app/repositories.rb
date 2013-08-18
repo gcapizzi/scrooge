@@ -2,20 +2,20 @@ module Scrooge
   module Repositories
 
     class SequelRepository
-      def initialize(model_collection)
-        @model_collection = model_collection
+      def initialize(model_class)
+        @model_class = model_class
       end
 
       def get(id)
-        @model_collection[id]
+        @model_class[id]
       end
 
       def all
-        @model_collection.all
+        @model_class.all
       end
 
       def create(params)
-        @model_collection.create(params)
+        @model_class.create(params)
       end
 
       def update(object)
@@ -27,7 +27,7 @@ module Scrooge
       end
 
       def filter(constraints)
-        SequelRepository.new(@model_collection.where(constraints))
+        SequelRepository.new(@model_class.where(constraints))
       end
     end
 
