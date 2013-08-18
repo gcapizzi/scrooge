@@ -25,16 +25,11 @@ module Scrooge
       def destroy(object)
         object.destroy
       end
-    end
 
-    class SequelTransactionsRepository < SequelRepository
-      def initialize
-        super(Scrooge::Models::Transaction)
-      end
-
-      def from_account(account_id)
-        @model_collection.where(account_id: account_id)
+      def filter(constraints)
+        SequelRepository.new(@model_collection.where(constraints))
       end
     end
+
   end
 end

@@ -17,25 +17,23 @@ module Scrooge
         @renderer.render(objects)
       end
 
-      def get_object(id)
-        @repository.get(id)
+      def get_repository(params)
+        @repository
       end
     end
 
     class ListAction < Action
       def call(req)
-        ok(render(get_objects(req.params)))
-      end
-
-      def get_objects(params = {})
-        @repository.all
+        objects = get_repository(req.params).all
+        ok(render(objects))
       end
     end
 
     class ShowAction < Action
       def call(req)
         id = req.params['id'].to_i
-        object = get_object(id) or return not_found
+        repository = get_repository(req.params)
+        object = repository.get(id) or return not_found
         body = render(object)
         ok(body)
       end
@@ -44,25 +42,23 @@ module Scrooge
     class UpdateAction < Action
       def call(req)
         id = req.params['id'].to_i
-        object = get_object(id) or return not_found
+        repository = get_repository(req.params)
+        object = repository.get(id) or return not_found
 
         object.set(req.params)
-        if update_object(object)
+        if repository.update(object)
           body = render(object)
           ok(body)
         else
           bad_request
         end
       end
-
-      def update_object(object)
-        @repository.update(object)
-      end
     end
 
     class CreateAction < Action
       def call(req)
-        object = create_object(req.params)
+        repository = get_repository(req.params)
+        object = repository.create(req.params)
 
         if object
           body = render(object)
@@ -71,27 +67,20 @@ module Scrooge
           bad_request
         end
       end
-
-      def create_object(params)
-        @repository.create(params)
-      end
     end
 
     class DeleteAction < Action
       def call(req)
         id = req.params['id'].to_i
-        object = get_object(id) or return not_found
+        repository = get_repository(req.params)
+        object = repository.get(id) or return not_found
 
-        if destroy_object(object)
+        if repository.destroy(object)
           body = render(object)
           ok(body)
         else
           bad_request
         end
-      end
-
-      def destroy_object(object)
-        @repository.destroy(object)
       end
     end
   end

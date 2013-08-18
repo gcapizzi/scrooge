@@ -77,6 +77,14 @@ module Scrooge
           expect(subject.all.count).to eq(2)
         end
       end
+
+      describe '#filter' do
+        it 'returns a new repository, with the dataset filtered by the specified constraints' do
+          filtered_repo = subject.filter(id: 3)
+          expect(filtered_repo.get(1)).to be_nil
+          expect(filtered_repo.get(3)).not_to be_nil
+        end
+      end
     end
 
     describe SequelRepository do
@@ -85,19 +93,5 @@ module Scrooge
       subject { SequelRepository.new(Models::Account) }
       it_behaves_like 'a repository'
     end
-
-    describe SequelTransactionsRepository do
-      let(:account) { Fabricate(:account) }
-      let(:transactions) { account.transactions }
-      let(:other_transactions) { 2.times { Fabricate(:transaction) } }
-
-      describe '#from_account' do
-        it 'returns all transactions from an account' do
-          expect(subject.from_account(account.id).count).to eq(3)
-          expect(subject.from_account(account.id).all).to eq(transactions)
-        end
-      end
-    end
-
   end
 end
