@@ -18,4 +18,5 @@ group :test, :development do
   gem 'guard'
   gem 'guard-rspec'
   gem 'database_cleaner'
+  gem 'mutant'
 end
